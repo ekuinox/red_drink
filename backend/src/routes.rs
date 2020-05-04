@@ -42,7 +42,6 @@ pub fn get_token() -> Redirect {
 pub fn auth(code: String, state: String) -> Redirect {
     let token_result = Client
         .exchange_code(AuthorizationCode::new(code))
-        // Set the PKCE code verifier.
         .request(http_client).unwrap();
 
     Redirect::to(format!("/?token={}", token_result.access_token().secret()))
