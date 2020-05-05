@@ -19,7 +19,7 @@ use std::env;
 use lazy_static::lazy_static;
 
 lazy_static! {
-    static ref Client: BasicClient = BasicClient::new(
+    static ref CLIENT: BasicClient = BasicClient::new(
         ClientId::new(env::var("RED_DRINK_GITHUB_CLIENT_ID").expect("missing RED_DRINK_GITHUB_CLIENT_ID")),
         Some(ClientSecret::new(env::var("RED_DRINK_GITHUB_CLIENT_SECRET").expect("missing RED_DRINK_GITHUB_CLIENT_SECRET"))),
         AuthUrl::new("https://github.com/login/oauth/authorize".to_string()).unwrap(),
@@ -32,7 +32,7 @@ pub type Session<'a> = rocket_session::Session<'a, String>;
 #[get("/get_token")]
 pub fn get_token(session: Session) -> Redirect {
     let (pkce_challenge, pkce_verifier) = PkceCodeChallenge::new_random_sha256();
-    let (authorize_url, csrf_secret) = Client
+    let (authorize_url, csrf_secret) = CLIENT
         .authorize_url(CsrfToken::new_random)
         .add_scope(Scope::new("public_repo".to_string()))
         .add_scope(Scope::new("user:email".to_string()))
@@ -51,7 +51,7 @@ pub fn auth(code: String, state: String, session: Session) -> Redirect {
     let pkce_verifier = session.tap(|data| {
         PkceCodeVerifier::new((*data).clone())
     });
-    let token_result = Client
+    let token_result = CLIENT
         .exchange_code(AuthorizationCode::new(code))
         .set_pkce_verifier(pkce_verifier)
         .request(http_client).unwrap();
