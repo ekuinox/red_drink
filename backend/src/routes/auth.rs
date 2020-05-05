@@ -27,8 +27,7 @@ struct GetAuthenticatedUserResponse {
 pub fn authorize(code: String, state: String, session: Session) -> Redirect {
     Redirect::to({
         session.tap(|data| {
-            let result: Option<Option<serde_json::Value>> = data.dot_get(PKCE_VERIFIER_PATH).ok();
-            result.flatten().map(|verifier| { PkceCodeVerifier::new(verifier.as_str().unwrap().to_string()) })
+            data.dot_get(PKCE_VERIFIER_PATH).ok().flatten().map(|verifier: serde_json::Value| { PkceCodeVerifier::new(verifier.as_str().unwrap().to_string()) })
         }).map(|pkce_verifier| { exchange_code_to_access_token(code, pkce_verifier) })
         .flatten()
         .map(|token| {
