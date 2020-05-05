@@ -25,29 +25,22 @@ struct GetAuthenticatedUserResponse {
 
 #[get("/auth?<code>&<state>")]
 pub fn authorize(code: String, state: String, session: Session) -> Redirect {
-    let pkce_verifier_opt = session.tap(|data| {
-        let result: Option<Option<serde_json::Value>> = data.dot_get(PKCE_VERIFIER_PATH).ok();
-        result.flatten().map(|verifier| { PkceCodeVerifier::new(verifier.as_str().unwrap().to_string()) })
-    });
-
     Redirect::to({
-        if let Some(pkce_verifier) = pkce_verifier_opt {
-            if let Some(token) = exchange_code_to_access_token(code, pkce_verifier) {
-                let username = create_api_client(&token.secret())
-                    .get("https://api.github.com/user")
-                    .send().map(|response| {
-                        if let Ok(authenticated_user_response) = response.json::<GetAuthenticatedUserResponse>() { // when status 200
-                            authenticated_user_response.login
-                        } else {
-                            "".to_string()
-                        }
-                    }).unwrap_or("".to_string());
-                format!("/?token={}&username={}", token.secret(), username)
-            } else {
-                format!("/")
-            }
-        } else {
-            format!("/")
-        }
+        session.tap(|data| {
+            let result: Option<Option<serde_json::Value>> = data.dot_get(PKCE_VERIFIER_PATH).ok();
+            result.flatten().map(|verifier| { PkceCodeVerifier::new(verifier.as_str().unwrap().to_string()) })
+        }).map(|pkce_verifier| { exchange_code_to_access_token(code, pkce_verifier) })
+        .flatten()
+        .map(|token| {
+            create_api_client(&token.secret())
+                .get("https://api.github.com/user")
+                .send().map(|response| {
+                    response.json::<GetAuthenticatedUserResponse>().ok().map(|authenticated_user_response| { (token, authenticated_user_response.login) })
+                }).ok().flatten()
+        })
+        .flatten()
+        .map_or(format!("/"), |(token, username)| {
+            format!("/?token={}&username={}", token.secret(), username)
+        })
     })
 }
