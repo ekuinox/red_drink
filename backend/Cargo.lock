@@ -987,6 +987,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "parking_lot"
+version = "0.10.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "lock_api 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "parking_lot_core 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "parking_lot_core"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -997,6 +1006,19 @@ dependencies = [
  "redox_syscall 0.1.56 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc_version 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "smallvec 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)",
+ "winapi 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "parking_lot_core"
+version = "0.7.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "cfg-if 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
+ "cloudabi 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.2.69 (registry+https://github.com/rust-lang/crates.io-index)",
+ "redox_syscall 0.1.56 (registry+https://github.com/rust-lang/crates.io-index)",
+ "smallvec 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "winapi 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -1266,6 +1288,7 @@ dependencies = [
  "reqwest 0.10.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "rocket 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "rocket_contrib 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rocket_session 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "url 2.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -1433,6 +1456,16 @@ dependencies = [
  "state 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "time 0.1.43 (registry+https://github.com/rust-lang/crates.io-index)",
  "unicode-xid 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "rocket_session"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "parking_lot 0.10.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rand 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rocket 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -2232,8 +2265,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum openssl 0.10.29 (registry+https://github.com/rust-lang/crates.io-index)" = "cee6d85f4cb4c4f59a6a85d5b68a233d280c82e29e822913b9c8b129fbf20bdd"
 "checksum openssl-probe 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "77af24da69f9d9341038eba93a073b1fdaaa1b788221b00a69bce9e762cb32de"
 "checksum openssl-sys 0.9.55 (registry+https://github.com/rust-lang/crates.io-index)" = "7717097d810a0f2e2323f9e5d11e71608355e24828410b55b9d4f18aa5f9a5d8"
+"checksum parking_lot 0.10.2 (registry+https://github.com/rust-lang/crates.io-index)" = "d3a704eb390aafdc107b0e392f56a82b668e3a71366993b5340f5833fd62505e"
 "checksum parking_lot 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)" = "f842b1982eb6c2fe34036a4fbfb06dd185a3f5c8edfaacdf7d1ea10b07de6252"
 "checksum parking_lot_core 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)" = "b876b1b9e7ac6e1a74a6da34d25c42e17e8862aa409cbbbdcfc8d86c6f3bc62b"
+"checksum parking_lot_core 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)" = "d58c7c768d4ba344e3e8d72518ac13e259d7c7ade24167003b8488e10b6740a3"
 "checksum pear 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "c26d2b92e47063ffce70d3e3b1bd097af121a9e0db07ca38a6cc1cf0cc85ff25"
 "checksum pear_codegen 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "336db4a192cc7f54efeb0c4e11a9245394824cc3bcbd37ba3ff51240c35d7a6e"
 "checksum percent-encoding 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "31010dd2e1ac33d5b46a5b413495239882813e0369f8ed8a5e266f173602f831"
@@ -2275,6 +2310,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum rocket_codegen 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)" = "2108b35e2c3a35759d3f16cc3002ece05523191d884d3ad6523693fd43324dde"
 "checksum rocket_contrib 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)" = "a10e7471279bc2d4a21b6fddd9589016bb119e6fbb547b216dd54ef237f28341"
 "checksum rocket_http 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)" = "6ce8ca76247376ea21cf271af0f95e3f2014596e3e4c7cc04e44ee6242a40ff2"
+"checksum rocket_session 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "47841e15809b2bc980760cfec20d959913cad4e1d5bf0f546f897fc229b73e90"
 "checksum rustc-demangle 0.1.16 (registry+https://github.com/rust-lang/crates.io-index)" = "4c691c0e608126e00913e33f0ccf3727d5fc84573623b8d65b2df340b5201783"
 "checksum rustc_version 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "138e3e0acb6c9fb258b19b67cb8abd63c00679d2851805ea151465464fe9030a"
 "checksum ryu 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)" = "ed3d612bc64430efeb3f7ee6ef26d590dce0c43249217bddc62112540c7941e1"

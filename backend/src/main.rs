@@ -17,6 +17,7 @@ fn main() {
     use routes::*;
 
     rocket::ignite()
+        .attach(Session::fairing())
         .mount("/", routes![get_token, auth])
         .mount("/", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/../frontend/dist")))
         .launch();

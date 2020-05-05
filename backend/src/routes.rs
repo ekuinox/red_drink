@@ -6,6 +6,7 @@ use oauth2::{
     ClientSecret,
     CsrfToken,
     PkceCodeChallenge,
+    PkceCodeVerifier,
     RedirectUrl,
     Scope,
     TokenUrl,
@@ -26,22 +27,33 @@ lazy_static! {
     ).set_redirect_url(RedirectUrl::new(env::var("RED_DRINK_GITHUB_REDIRECT_URL").unwrap().to_string()).unwrap());
 }
 
+pub type Session<'a> = rocket_session::Session<'a, String>;
+
 #[get("/get_token")]
-pub fn get_token() -> Redirect {
+pub fn get_token(session: Session) -> Redirect {
+    let (pkce_challenge, pkce_verifier) = PkceCodeChallenge::new_random_sha256();
     let (authorize_url, csrf_secret) = Client
         .authorize_url(CsrfToken::new_random)
         .add_scope(Scope::new("public_repo".to_string()))
         .add_scope(Scope::new("user:email".to_string()))
+        .set_pkce_challenge(pkce_challenge)
         .url();
 
+    session.tap(|v| {
+        *v = pkce_verifier.secret().clone();
+    });
 
     Redirect::to(authorize_url.into_string())
 }
 
 #[get("/auth?<code>&<state>")]
-pub fn auth(code: String, state: String) -> Redirect {
+pub fn auth(code: String, state: String, session: Session) -> Redirect {
+    let pkce_verifier = session.tap(|data| {
+        PkceCodeVerifier::new((*data).clone())
+    });
     let token_result = Client
         .exchange_code(AuthorizationCode::new(code))
+        .set_pkce_verifier(pkce_verifier)
         .request(http_client).unwrap();
 
     Redirect::to(format!("/?token={}", token_result.access_token().secret()))
