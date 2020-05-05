@@ -7,8 +7,6 @@ extern crate http;
 extern crate rocket_contrib;
 #[macro_use] extern crate rocket;
 extern crate serde;
-#[macro_use]
-extern crate serde_derive;
 extern crate serde_json;
 
 mod routes;
