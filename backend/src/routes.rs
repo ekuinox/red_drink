@@ -14,9 +14,9 @@ use oauth2::{
     AuthorizationCode
 };
 use oauth2::basic::BasicClient;
-use oauth2::reqwest::http_client;
 use std::env;
 use lazy_static::lazy_static;
+use serde::{Serialize, Deserialize};
 
 lazy_static! {
     static ref CLIENT: BasicClient = BasicClient::new(
@@ -46,6 +46,11 @@ pub fn get_token(session: Session) -> Redirect {
     Redirect::to(authorize_url.into_string())
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+struct GetAuthenticatedUserResponse {
+    login: String
+}
+
 #[get("/auth?<code>&<state>")]
 pub fn auth(code: String, state: String, session: Session) -> Redirect {
     let pkce_verifier = session.tap(|data| {
@@ -54,7 +59,24 @@ pub fn auth(code: String, state: String, session: Session) -> Redirect {
     let token_result = CLIENT
         .exchange_code(AuthorizationCode::new(code))
         .set_pkce_verifier(pkce_verifier)
-        .request(http_client).unwrap();
+        .request(oauth2::reqwest::http_client).unwrap();
 
-    Redirect::to(format!("/?token={}", token_result.access_token().secret()))
+    let token = token_result.access_token().secret();
+    let client = reqwest::blocking::Client::new();
+    let username = client
+        .get("https://api.github.com/user")
+        .header("Authorization", format!("token {}", token))
+        .header("Accept", "application/vnd.github.v3+json")
+        .header("User-Agent", "red_drink")
+        .send().map(|response| {
+            if let Ok(authenticated_user_response) = response.json::<GetAuthenticatedUserResponse>() { // when status 200
+                authenticated_user_response.login
+            } else {
+                "".to_string()
+            }
+        }).unwrap_or("".to_string());
+
+    let url = format!("/?token={}&username={}", token, username);
+
+    Redirect::to(url)
 }

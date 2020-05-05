@@ -3,8 +3,13 @@
 extern crate base64;
 extern crate oauth2;
 extern crate rand;
+extern crate http;
 extern crate rocket_contrib;
 #[macro_use] extern crate rocket;
+extern crate serde;
+#[macro_use]
+extern crate serde_derive;
+extern crate serde_json;
 
 mod routes;
 
