@@ -11,6 +11,7 @@ extern crate serde_json;
 
 mod routes;
 mod github;
+mod types;
 
 use rocket_contrib::serve::StaticFiles;
 use dotenv::dotenv;
@@ -18,11 +19,9 @@ use dotenv::dotenv;
 fn main() {
     dotenv().ok();
 
-    use routes::*;
-
     rocket::ignite()
-        .attach(Session::fairing())
-        .mount("/", routes![get_token, auth])
+        .attach(types::Session::fairing())
+        .mount("/", routes![routes::auth::request_token, routes::auth::authorize])
         .mount("/", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/../frontend/dist")))
         .launch();
 }

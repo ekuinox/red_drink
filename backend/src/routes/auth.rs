@@ -1,12 +1,11 @@
 use rocket::response::Redirect;
 use serde::{Serialize, Deserialize};
-use crate::github::*;
 use oauth2::PkceCodeVerifier;
+use crate::github::*;
+use crate::types::Session;
 
-pub type Session<'a> = rocket_session::Session<'a, String>;
-
-#[get("/get_token")]
-pub fn get_token(session: Session) -> Redirect {
+#[get("/request_token")]
+pub fn request_token(session: Session) -> Redirect {
     let (authorize_url, _, _, pkce_verifier) = get_authorize_url();
 
     session.tap(|v| {
@@ -22,7 +21,7 @@ struct GetAuthenticatedUserResponse {
 }
 
 #[get("/auth?<code>&<state>")]
-pub fn auth(code: String, state: String, session: Session) -> Redirect {
+pub fn authorize(code: String, state: String, session: Session) -> Redirect {
     let access_token = exchange_code_to_access_token(code, session.tap(|data| {
         PkceCodeVerifier::new((*data).clone())
     }));
