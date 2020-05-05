@@ -12,6 +12,7 @@ extern crate serde_derive;
 extern crate serde_json;
 
 mod routes;
+mod github;
 
 use rocket_contrib::serve::StaticFiles;
 use dotenv::dotenv;
