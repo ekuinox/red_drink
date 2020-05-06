@@ -16,6 +16,9 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
+    "@material-ui/core": "^4.9.13",
+    "@material-ui/icons": "^4.9.1",
+    "@types/material-ui": "^0.21.7",
     "@types/qs": "^6.9.1",
     "qs": "^6.9.4"
   }

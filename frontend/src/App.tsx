@@ -1,25 +1,11 @@
 import * as React from 'react'
+import { getToken, GetTokenResponse } from './red_drink_apis/get_token'
+import { TopBar } from './components/top_bar'
 
-export const App = (props: { token: string }) => {
-    interface UserProfile {
-        username?: string
-        profileImageUrl?: string
-    }
-
-    const [userProfile, setUserProfile] = React.useState<UserProfile>({})
+export const App = () => {
+    const [tokenResponse, setTokenResponse] = React.useState<GetTokenResponse>({})
     React.useEffect(() => {
-        fetch('https://api.github.com/user', { headers: { Authorization: `token ${props.token}`}}).then(r => r.json()).then(data => {
-            setUserProfile({
-                username: data.login,
-                profileImageUrl: data.avatar_url
-            })
-        })
-    }, [''])
-
-    return (
-        <div>
-            <p>{ userProfile.username }</p>
-            <img src={userProfile.profileImageUrl}></img>
-        </div>
-    )
+        getToken().then(setTokenResponse)
+    }, [ '' ])
+    return <TopBar token={tokenResponse.token} />
 }
