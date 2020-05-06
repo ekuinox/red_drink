@@ -10,6 +10,7 @@ const UserProfile = ({profile}: { profile: GitHubUser}) => (
     <div>
         <h2>{ profile.name }</h2>
         <img src={ profile.avatar_url }></img>
+        <a href="/logout">ログアウトはこちら</a>
     </div>
 )
 
