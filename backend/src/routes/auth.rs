@@ -9,6 +9,7 @@ use rocket_contrib::json::Json;
 const PKCE_VERIFIER_PATH: &'static str = "PKCE_VERIFIER";
 pub const GITHUB_ACCESS_TOKEN_PATH: &'static str = "GITHUB_ACCESS_TOKEN";
 
+// /logoutに応じて/loginに変更したい
 #[get("/request_token")]
 pub fn request_token(session: Session) -> Redirect {
     let (authorize_url, _, _, pkce_verifier) = get_authorize_url();
@@ -61,4 +62,10 @@ pub fn get_token(session: Session) -> Json<GetTokenResponse> {
             }).flatten()
         })
     })
+}
+
+#[get("/logout")]
+pub fn logout(session: Session) -> Redirect {
+    session.clear();
+    Redirect::to("/")
 }
