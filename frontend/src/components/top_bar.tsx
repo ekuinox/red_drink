@@ -18,7 +18,7 @@ export const TopBar = ({token}: { token?: string}) => {
     if (token == null) {
         return (
             <div>
-                <a href="/request_token">ログインはこちら</a>
+                <a href="/login">ログインはこちら</a>
             </div>
         )
     }
