@@ -1,4 +1,9 @@
 import * as React from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import Button from '@material-ui/core/Button'
+import { Link } from '@material-ui/core'
 
 interface GitHubUser {
     name: string
@@ -6,30 +11,25 @@ interface GitHubUser {
     login: string
 }
 
-const UserProfile = ({profile}: { profile: GitHubUser}) => (
-    <div>
-        <h2>{ profile.name }</h2>
-        <img src={ profile.avatar_url }></img>
-        <a href="/logout">ログアウトはこちら</a>
-    </div>
-)
+const useStyles = makeStyles((theme) => ({
+    root: { flexGrow: 1 },
+    menuButton: { marginRight: theme.spacing(2) },
+    title: { flexGrow: 1 }
+}));
 
 export const TopBar = ({token}: { token?: string}) => {
-    if (token == null) {
-        return (
-            <div>
-                <a href="/login">ログインはこちら</a>
-            </div>
-        )
-    }
-
-    const [user, setUser] = React.useState<GitHubUser | null>()
-    React.useEffect(() => {
-        fetch('https://api.github.com/user', {
-            method: 'GET',
-            headers: { Authorization: `token ${token}` }
-        }).then(response => response.json()).then(setUser)
-    }, [ '' ])
-    
-    return user == null ? <div>loading...</div> : <UserProfile profile={user} />
+    const classes = useStyles()
+    return (
+        <div className={classes.root}>
+            <AppBar position="static">
+                <Toolbar>
+                    <Link href={ token == null ? "/login" : "/logout" }>
+                        <Button variant="contained" color="secondary">
+                            { token == null ? "Login" : "Logout" }
+                        </Button>
+                    </Link>
+                </Toolbar>
+            </AppBar>
+        </div>
+    )
 }
