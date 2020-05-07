@@ -1,10 +1,9 @@
 use rocket::response::Redirect;
 use serde::{Serialize, Deserialize};
 use oauth2::PkceCodeVerifier;
+use json_dotpath::DotPaths;
 use crate::github::*;
 use crate::types::Session;
-use json_dotpath::DotPaths;
-use rocket_contrib::json::Json;
 
 const PKCE_VERIFIER_PATH: &'static str = "PKCE_VERIFIER";
 pub const GITHUB_ACCESS_TOKEN_PATH: &'static str = "GITHUB_ACCESS_TOKEN";
@@ -19,6 +18,12 @@ pub fn request_token(session: Session) -> Redirect {
     });
 
     Redirect::to(authorize_url.into_string())
+}
+
+#[get("/logout")]
+pub fn logout(session: Session) -> Redirect {
+    session.clear();
+    Redirect::to("/")
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -46,26 +51,4 @@ pub fn authorize(code: String, state: String, session: Session) -> Redirect {
         });
     }
     Redirect::to(format!("/"))
-}
-
-#[derive(Serialize)]
-pub struct GetTokenResponse {
-    pub token: Option<String>
-}
-
-#[get("/token")]
-pub fn get_token(session: Session) -> Json<GetTokenResponse> {
-    Json(GetTokenResponse {
-        token: session.tap(|data| {
-            data.dot_get(GITHUB_ACCESS_TOKEN_PATH).ok().flatten().map(|value: serde_json::Value| {
-                value.as_str().map(|token| { token.to_string() })
-            }).flatten()
-        })
-    })
-}
-
-#[get("/logout")]
-pub fn logout(session: Session) -> Redirect {
-    session.clear();
-    Redirect::to("/")
 }
