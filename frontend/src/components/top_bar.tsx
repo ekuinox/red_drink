@@ -23,11 +23,9 @@ export const TopBar = ({token}: { token?: string}) => {
         <div className={classes.root}>
             <AppBar position="static">
                 <Toolbar>
-                    <Link href={ token == null ? "/login" : "/logout" }>
-                        <Button variant="contained" color="secondary">
-                            { token == null ? "Login" : "Logout" }
-                        </Button>
-                    </Link>
+                    <Button variant="contained" color="secondary" href={ token == null ? "/login" : "/logout" }>
+                        { token == null ? "Login" : "Logout" }
+                    </Button>
                 </Toolbar>
             </AppBar>
         </div>
