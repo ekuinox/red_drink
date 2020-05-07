@@ -8,9 +8,8 @@ use crate::types::Session;
 const PKCE_VERIFIER_PATH: &'static str = "PKCE_VERIFIER";
 pub const GITHUB_ACCESS_TOKEN_PATH: &'static str = "GITHUB_ACCESS_TOKEN";
 
-// /logoutに応じて/loginに変更したい
-#[get("/request_token")]
-pub fn request_token(session: Session) -> Redirect {
+#[get("/login")]
+pub fn login(session: Session) -> Redirect {
     let (authorize_url, _, _, pkce_verifier) = get_authorize_url();
 
     let _ = session.tap(|v| {
