@@ -1,9 +1,7 @@
 import * as React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
-import Button from '@material-ui/core/Button'
-import Avatar from '@material-ui/core/Avatar'
+import { AppBar, Toolbar, Typography, Button, Avatar, IconButton } from '@material-ui/core'
+import MenuIcon from '@material-ui/icons/Menu'
 
 interface GitHubUser {
     name: string
@@ -17,13 +15,10 @@ const useStyles = makeStyles((theme) => ({
     title: { flexGrow: 1 }
 }))
 
-const GitHubAvatar = ({user}: { user?: GitHubUser }) => {
+const AvatarIcon = ({user}: { user?: GitHubUser }) => {
     if (user == null) return <div></div>
     return (
-        <div>
-            { user.login }
-            <Avatar alt={user.name} src={user.avatar_url} />
-        </div>
+        <Avatar alt={user.name} src={user.avatar_url} />
     )
 }
 
@@ -43,10 +38,14 @@ export const TopBar = ({token}: { token?: string}) => {
         <div className={classes.root}>
             <AppBar position="static">
                 <Toolbar>
+                    <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography className={classes.title}>Top</Typography>
                     <Button variant="contained" color="secondary" href={ token == null ? "/login" : "/logout" }>
                         { token == null ? "Login" : "Logout" }
                     </Button>
-                    <GitHubAvatar user={user} />
+                    <AvatarIcon user={user} />
                 </Toolbar>
             </AppBar>
         </div>
