@@ -22,7 +22,7 @@ const AvatarIcon = ({user}: { user?: GitHubUser }) => {
     )
 }
 
-export const TopBar = ({token}: { token?: string}) => {
+export const Header = ({token}: { token?: string}) => {
     const classes = useStyles()
     const [user, setUser] = React.useState<GitHubUser | null>()
     React.useEffect(() => {
