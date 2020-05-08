@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { getToken, GetTokenResponse } from './red_drink_apis/get_token'
-import { Header } from './components/Header'
-import { Body } from './components/Body'
+import { Page } from './components/Page'
 
 export const App = () => {
     const [tokenResponse, setTokenResponse] = React.useState<GetTokenResponse>({})
@@ -10,8 +9,9 @@ export const App = () => {
     }, [ '' ])
     return (
         <>
-            <Header token={tokenResponse.token} />
-            <Body token={tokenResponse.token} />
+            <Page title="Top" token={tokenResponse.token}>
+                <p>{tokenResponse.token == null ? 'ログインしてね' : 'こんにちは'}</p>
+            </Page>
         </>
     )
 }

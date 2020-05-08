@@ -1,8 +1,5 @@
 import * as React from 'react'
 
-export const Body = (props: { token?: string }) => {
-    if (props.token == null) {
-        return <div>ログインしてね</div>
-    }
-    return <div>こんにちは</div>
+export const Body = (props: { token?: string, children: React.ReactNode}) => {
+    return <div>{ props.children }</div>
 }
