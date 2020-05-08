@@ -9,7 +9,7 @@ export const Page = (props: {
 }) => {
     return (
         <>
-            <Header token={props.token} />
+            <Header token={ props.token } title={ props.title }/>
             <Body token={props.token}>{ props.children }</Body>
         </>
     )

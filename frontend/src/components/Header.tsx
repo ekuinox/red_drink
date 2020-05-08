@@ -11,7 +11,6 @@ interface GitHubUser {
 
 const useStyles = makeStyles((theme) => ({
     root: { flexGrow: 1 },
-    menuButton: { marginRight: theme.spacing(2) },
     title: { flexGrow: 1 }
 }))
 
@@ -22,30 +21,28 @@ const AvatarIcon = ({user}: { user?: GitHubUser }) => {
     )
 }
 
-export const Header = ({token}: { token?: string}) => {
+export const Header = (props: { token?: string, title: string}) => {
     const classes = useStyles()
     const [user, setUser] = React.useState<GitHubUser | null>()
     React.useEffect(() => {
-        if (token != null) {
+        if (props.token != null) {
             fetch('https://api.github.com/user', {
                 method: 'GET',
-                headers: { Authorization: `token ${token}` }
+                headers: { Authorization: `token ${props.token}` }
             }).then(r => r.json()).then(setUser)
         }
-    }, [ token ])
+    }, [ props.token ])
     
     return (
         <div className={classes.root}>
             <AppBar position="static">
                 <Toolbar>
-                    <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography className={classes.title}>Top</Typography>
-                    <Button variant="contained" color="secondary" href={ token == null ? "/login" : "/logout" }>
-                        { token == null ? "Login" : "Logout" }
-                    </Button>
-                    <AvatarIcon user={user} />
+                    <Typography className={classes.title}>{ props.title }</Typography>
+                    { props.token == null ? (
+                        <Button variant="contained" color="secondary" href="/login">Login</Button>
+                    ) : (
+                        <AvatarIcon user={user} />
+                    )}
                 </Toolbar>
             </AppBar>
         </div>
