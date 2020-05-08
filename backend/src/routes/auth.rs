@@ -31,9 +31,9 @@ struct GetAuthenticatedUserResponse {
     id: u64
 }
 
-#[get("/auth?<code>&<state>")]
-pub fn authorize(code: String, state: String, session: Session) -> Redirect {
-    if let Some((token, authenticate_user_response)) = session.tap(|data| {
+#[get("/auth?<code>")]
+pub fn authorize(code: String, session: Session) -> Redirect {
+    if let Some((token, _)) = session.tap(|data| {
         data.dot_get(PKCE_VERIFIER_PATH).ok().flatten().map(|verifier: serde_json::Value| { PkceCodeVerifier::new(verifier.as_str().unwrap().to_string()) })
     }).map(|pkce_verifier| { exchange_code_to_access_token(code, pkce_verifier) })
     .flatten()
