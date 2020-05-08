@@ -1,16 +1,17 @@
 import * as React from 'react'
 import { Header } from './Header'
 import { Body } from './Body'
+import { TokenResponse } from '../red_drink_apis/get_token'
 
 export const Page = (props: {
     title: string
-    token?: string
+    tokenResponse?: TokenResponse
     children: React.ReactNode
 }) => {
     return (
         <>
-            <Header token={ props.token } title={ props.title }/>
-            <Body token={props.token}>{ props.children }</Body>
+            <Header tokenResponse={ props.tokenResponse } title={ props.title }/>
+            <Body tokenResponse={props.tokenResponse}>{ props.children }</Body>
         </>
     )
 }
