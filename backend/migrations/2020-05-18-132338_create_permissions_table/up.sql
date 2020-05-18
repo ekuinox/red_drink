@@ -1,4 +1,6 @@
 create table permissions (
-    name varchar primary key,
+    path varchar primary key,
+    name varchar not null,
+    description varchar,
     created_at TIMESTAMP not null
 )
