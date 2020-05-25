@@ -2,6 +2,7 @@ table! {
     github_users (github_id) {
         github_id -> Int4,
         user_id -> Int4,
+        created_at -> Timestamp,
     }
 }
 
