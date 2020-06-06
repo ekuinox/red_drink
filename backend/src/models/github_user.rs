@@ -50,4 +50,12 @@ impl GitHubUser {
     pub fn find(github_id: i32, connection: &DBConnection) -> Option<GitHubUser> {
         github_users::table.filter(github_users::github_id.eq(github_id)).first::<GitHubUser>(connection).ok()
     }
+
+    /**
+     * findして見つからなかったら新しくUserを追加する
+     * 見つかった場合はUserを返す
+     */
+    pub fn find_or_new(github_id: i32, connection: &DBConnection) -> Option<User> {
+        None as Option<User>
+    }
 }
