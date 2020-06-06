@@ -4,6 +4,8 @@ use oauth2::PkceCodeVerifier;
 use json_dotpath::DotPaths;
 use crate::github::*;
 use crate::types::Session;
+use crate::db::Connection;
+use crate::models::github_user::GitHubUser;
 
 const PKCE_VERIFIER_PATH: &'static str = "PKCE_VERIFIER";
 pub const GITHUB_ACCESS_TOKEN_PATH: &'static str = "GITHUB_ACCESS_TOKEN";
@@ -32,8 +34,8 @@ struct GetAuthenticatedUserResponse {
 }
 
 #[get("/auth?<code>")]
-pub fn authorize(code: String, session: Session) -> Redirect {
-    if let Some((token, _)) = session.tap(|data| {
+pub fn authorize(code: String, session: Session, connection: Connection) -> Redirect {
+    if let Some((token, user)) = session.tap(|data| {
         data.dot_get(PKCE_VERIFIER_PATH).ok().flatten().map(|verifier: serde_json::Value| { PkceCodeVerifier::new(verifier.as_str().unwrap().to_string()) })
     }).map(|pkce_verifier| { exchange_code_to_access_token(code, pkce_verifier) })
     .flatten()
@@ -48,6 +50,8 @@ pub fn authorize(code: String, session: Session) -> Redirect {
         let _ = session.tap(|data| {
             data.dot_set(GITHUB_ACCESS_TOKEN_PATH, token)
         });
+        GitHubUser::find_or_new(user.id as i32, &connection);
     }
+    
     Redirect::to(format!("/"))
 }
