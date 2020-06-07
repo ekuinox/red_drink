@@ -1,0 +1,23 @@
+name: frontend
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v1
+      - name: setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install node modules
+        run: |
+          cd ./frontend
+          yarn install
+      - name: Build
+        run: |
+          cd ./frontend
+          export WEBPACK_ENV='production' &&  yarn webpack
