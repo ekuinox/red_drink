@@ -6,19 +6,19 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         rust: [nightly]
-        
+
     runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v1
     - name: setup
       run: |
-        export DATABASE_URL=postgres://root:root@localhost:5432/red_drink
-        export RED_DRINK_GITHUB_CLIENT_ID=github_client_id
-        export RED_DRINK_GITHUB_CLIENT_SECRET=github_client_secret
-        export RED_DRINK_GITHUB_REDIRECT_URL=https://example.com/auth
+        DATABASE_URL=postgres://root:root@localhost:5432/red_drink
+        RED_DRINK_GITHUB_CLIENT_ID=github_client_id
+        RED_DRINK_GITHUB_CLIENT_SECRET=github_client_secret
+        RED_DRINK_GITHUB_REDIRECT_URL=https://example.com/auth
     - name: Build server
       run: cd ./backend && cargo build --bin red_drink --verbose
     - name: Build tool `create_user`

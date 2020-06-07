@@ -1,9 +1,10 @@
 name: frontend
+on: [push]
 jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - name: checkout
@@ -20,4 +21,4 @@ jobs:
       - name: Build
         run: |
           cd ./frontend
-          export WEBPACK_ENV='production' &&  yarn webpack
+          WEBPACK_ENV='production' &&  yarn webpack
