@@ -24,3 +24,11 @@ serde = { version = "^1.0.106", features = ["derive"] }
 serde_json = "1.0.52"
 json_dotpath = "1.0.2"
 diesel = { version = "1.4.4", features =  ["postgres", "r2d2", "chrono"] }
+
+[[bin]]
+name = "red_drink"
+path = "src/main.rs"
+
+[[bin]]
+name = "create_admin_user"
+path = "src/bin/create_admin_user.rs"
