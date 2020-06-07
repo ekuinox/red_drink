@@ -28,7 +28,6 @@ diesel = { version = "1.4.4", features =  ["postgres", "r2d2", "chrono"] }
 [[bin]]
 name = "red_drink"
 path = "src/main.rs"
-default = true
 
 [[bin]]
 name = "create_user"
