@@ -5,7 +5,7 @@ use json_dotpath::DotPaths;
 use crate::github::*;
 use crate::types::Session;
 use crate::db::Connection;
-use crate::models::github_user::GitHubUser;
+use crate::models::user::User;
 
 const PKCE_VERIFIER_PATH: &'static str = "PKCE_VERIFIER";
 pub const GITHUB_ACCESS_TOKEN_PATH: &'static str = "GITHUB_ACCESS_TOKEN";
@@ -50,7 +50,8 @@ pub fn authorize(code: String, session: Session, connection: Connection) -> Redi
         let _ = session.tap(|data| {
             data.dot_set(GITHUB_ACCESS_TOKEN_PATH, token)
         });
-        GitHubUser::find_or_new(user.id as i32, &connection);
+        // アカウントが存在するか確認し、存在しなければ作成する
+        let _user: Option<User> = User::find_by_github_id(user.id as i32, &connection);
     }
     
     Redirect::to(format!("/"))

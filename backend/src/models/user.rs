@@ -89,4 +89,22 @@ impl User {
     pub fn find(id: i32, connection: &DBConnection) -> Option<User> {
         users::table.find(id).get_result(connection).ok()
     }
+
+    /**
+     * GitHubIdから検索する
+     */
+    pub fn find_by_github_id(github_id: i32, connection: &DBConnection) -> Option<User> {
+        GitHubUser::find(github_id, connection).and_then(|user: GitHubUser| {
+            user.to_user(connection)
+        })
+    }
+
+    /**
+     * GitHubIdから検索し、存在しなければ作成する
+     */
+    pub fn find_or_new_by_github_id(github_id: i32, connection: &DBConnection) -> Option<User> {
+        Self::find_by_github_id(github_id, connection).or_else(|| {
+            User::create_with_github_id(github_id, &connection)
+        })
+    }
 }

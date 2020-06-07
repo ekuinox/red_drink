@@ -52,10 +52,9 @@ impl GitHubUser {
     }
 
     /**
-     * findして見つからなかったら新しくUserを追加する
-     * 見つかった場合はUserを返す
+     * Userに変換する
      */
-    pub fn find_or_new(github_id: i32, connection: &DBConnection) -> Option<User> {
-        None as Option<User>
+    pub fn to_user(self, connection: &DBConnection) -> Option<User> {
+        User::find(self.user_id, connection)
     }
 }
