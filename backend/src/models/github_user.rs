@@ -11,7 +11,7 @@ use crate::models::user::User;
 #[table_name = "github_users"]
 #[derive(AsChangeset, Serialize, Deserialize, Insertable, Queryable, Associations, PartialEq, Debug)]
 #[belongs_to(User, foreign_key = "user_id")]
-#[primary_key(user_id)]
+#[primary_key(github_id)]
 pub struct GitHubUser {
     pub github_id: i32,
     pub user_id: i32,
@@ -48,7 +48,7 @@ impl GitHubUser {
      * GitHubのユーザIDから取得する
      */
     pub fn find(github_id: i32, connection: &DBConnection) -> Option<GitHubUser> {
-        github_users::table.filter(github_users::github_id.eq(github_id)).first::<GitHubUser>(connection).ok()
+        github_users::table.find(github_id).get_result::<GitHubUser>(connection).ok()
     }
 
     /**
