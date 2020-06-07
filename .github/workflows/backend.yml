@@ -4,6 +4,8 @@ on: [push]
 
 jobs:
   build:
+    env: postgres://root:root@localhost:5432/red_drink
+      DATABASE_URL: 
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -20,31 +22,25 @@ jobs:
             override: true
       - name: Build server
         run: |
-          DATABASE_URL=postgres://root:root@localhost:5432/red_drink
           cd ./backend
           cargo build --bin red_drink --verbose
       - name: Build tool `create_user`
         run: |
-          DATABASE_URL=postgres://root:root@localhost:5432/red_drink
           cd ./backend
           cargo build --bin create_user --verbose
       - name: Build tool `add_role_to_user`
         run: |
-          DATABASE_URL=postgres://root:root@localhost:5432/red_drink
           cd ./backend
           cargo build --bin add_role_to_user --verbose
       - name: Test server
         run: |
-          DATABASE_URL=postgres://root:root@localhost:5432/red_drink
           cd ./backend
           cargo test --bin red_drink --verbose
       - name: Test tool `create_user`
         run: |
-          DATABASE_URL=postgres://root:root@localhost:5432/red_drink
           cd ./backend
           cargo test --bin create_user --verbose
       - name: Test tool `add_role_to_user`
         run: |
-          DATABASE_URL=postgres://root:root@localhost:5432/red_drink
           cd ./backend
           cargo test --bin add_role_to_user --verbose
