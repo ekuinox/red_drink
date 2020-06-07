@@ -8,7 +8,7 @@ jobs:
       DATABASE_URL: postgres://root:root@localhost:5432/red_drink
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         rust: [nightly]
 
     runs-on: ${{ matrix.os }}
