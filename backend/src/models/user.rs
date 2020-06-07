@@ -77,10 +77,10 @@ impl User {
     }
 
     /**
-     * 権限を追加する
+     * ユーザにRoleを付与する
      */
-    pub fn add_role(self, role_id: i32, connection: &DBConnection) -> (User, bool) {
-        (self, UsersRoleInsertable::new(self.id, role_id).create(connection))
+    pub fn add_role(&self, role_id: i32, connection: &DBConnection) -> bool {
+        UsersRoleInsertable::new(self.id, role_id).create(connection)
     }
 
     /**
