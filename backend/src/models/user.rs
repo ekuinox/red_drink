@@ -57,6 +57,19 @@ impl User {
     }
 
     /**
+     * GitHubアカウントから作成する
+     * 注意: GitHubUserへの挿入が失敗した場合でも、そのレコードの削除を行わなっていない
+     */
+    pub fn create_with_github_id(github_id: i32, connection: &DBConnection) -> Option<User> {
+        Self::create(UserInsertable::new(), connection).and_then(|user| {
+            match user.associate_to_github(github_id, connection) {
+                (user, true) => Some(user),
+                _ => None
+            }
+        })
+    }
+
+    /**
      * GitHubアカウントと紐付ける
      */
     pub fn associate_to_github(self, github_user_id: i32, connection: &DBConnection) -> (User, bool) {
