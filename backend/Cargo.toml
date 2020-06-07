@@ -31,5 +31,5 @@ path = "src/main.rs"
 default = true
 
 [[bin]]
-name = "create_admin_user"
-path = "src/bin/create_admin_user.rs"
+name = "create_user"
+path = "src/bin/create_user.rs"
