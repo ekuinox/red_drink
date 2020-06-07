@@ -5,7 +5,7 @@ use chrono::{Utc, NaiveDateTime};
 use crate::schema::{roles, roles_permissions};
 use crate::models::permission::Permission;
 
-static ADMIN_ROLE_ID: i32 = 0;
+pub const ADMIN_ROLE_ID: i32 = 0;
 
 #[table_name = "roles"]
 #[derive(AsChangeset, Serialize, Deserialize, Insertable, Queryable, PartialEq, Debug)]
