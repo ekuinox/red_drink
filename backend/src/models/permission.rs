@@ -36,7 +36,7 @@ impl PermissionInsertable {
         }
     }
     
-    pub fn create(self, connection: &DBConnection) -> Option<Permission> {
+    pub fn create(&self, connection: &DBConnection) -> Option<Permission> {
         let _ = diesel::insert_into(permissions::table).values(&self).execute(connection);
         Permission::find(self.path, connection)
     }
