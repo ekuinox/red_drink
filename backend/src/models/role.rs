@@ -45,6 +45,46 @@ impl Role {
             v.into_iter().map(&Role::new_from_tuple).collect()
         }).ok()
     }
+
+    pub fn find(id: i32, connection: &DBConnection) -> Option<Role> {
+        roles::table.find(id).get_result::<Role>(connection).ok()
+    }
+
+    /**
+     * RoleにPermissionを紐付ける
+     */
+    pub fn attach_permission(&self, permission_path: String, connection: &DBConnection) -> QueryResult<usize> {
+        diesel::insert_into(roles_permissions::table).values((
+            roles_permissions::role_id.eq(self.id), roles_permissions::permission_path.eq(permission_path))
+        ).execute(connection)
+    }
+}
+
+#[table_name = "roles"]
+#[derive(AsChangeset, Serialize, Deserialize, Insertable, Queryable, PartialEq, Debug, Clone)]
+#[primary_key(id)]
+pub struct RoleInsertable {
+    pub name: String
+}
+
+impl RoleInsertable {
+    pub fn new(name: String) -> RoleInsertable {
+        RoleInsertable { name }
+    }
+    
+    /**
+     * Roleを新規作成する
+     */
+    pub fn create(&self, connection: &DBConnection) -> Option<Role> {
+        diesel::insert_into(roles::table)
+            .values((*self).clone())
+            .returning(roles::id)
+            .get_result(connection)
+            .ok()
+            .and_then(|id| {
+                Role::find(id, connection)
+            })
+    }
 }
 
 #[table_name = "roles_permissions"]
