@@ -21,7 +21,7 @@ impl Permission {
 }
 
 #[table_name = "permissions"]
-#[derive(AsChangeset, Serialize, Deserialize, Insertable, Queryable, PartialEq, Debug)]
+#[derive(AsChangeset, Serialize, Deserialize, Insertable, Queryable, PartialEq, Debug, Clone)]
 #[primary_key(path)]
 pub struct PermissionInsertable {
     path: String,
@@ -37,7 +37,7 @@ impl PermissionInsertable {
     }
     
     pub fn create(&self, connection: &DBConnection) -> Option<Permission> {
-        let _ = diesel::insert_into(permissions::table).values(&self).execute(connection);
-        Permission::find(self.path, connection)
+        let _ = diesel::insert_into(permissions::table).values((*self).clone()).execute(connection);
+        Permission::find(self.path.clone(), connection)
     }
 }
