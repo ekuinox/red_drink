@@ -5,4 +5,4 @@ GitHubのアカウントでログインしてきたら、そのGitHubのIDを使
 
 ## .env一気にexportする
 
-`$ while read line; do export ; done < .env`
+`$ while read line; do export ${line}; done < .env`
