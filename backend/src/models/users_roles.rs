@@ -38,6 +38,8 @@ impl UsersRoleInsertable {
      * 新規追加
      */
     pub fn create(self, connection: &DBConnection) -> bool {
-        diesel::insert_into(users_roles::table).values(self).execute(connection).is_ok()
+        connection.transaction(|| {
+            diesel::insert_into(users_roles::table).values(self).execute(connection)
+        }).is_ok()
     }
 }
