@@ -2,7 +2,7 @@ use diesel;
 use diesel::prelude::*;
 use crate::db::DBConnection;
 use chrono::{Utc, NaiveDateTime};
-use crate::schema::{roles, roles_permissions};
+use crate::schema::{roles, roles_permissions, users_roles};
 use crate::models::permission::Permission;
 
 pub const ADMIN_ROLE_ID: i32 = 0;
@@ -33,6 +33,17 @@ impl Role {
      */
     pub fn new_from_tuple(t: (i32, String, NaiveDateTime)) -> Role {
         Self::new(t.0, t.1, t.2)
+    }
+
+    /**
+     * Userに紐づくRoleを取得する
+     */
+    pub fn get_roles(user_id: i32, connection: &DBConnection) -> Option<Vec<Role>> {
+        let query = users_roles::table.inner_join(roles::table).filter(users_roles::user_id.eq(user_id));
+        let r = query.select((roles::id, roles::name, roles::created_at)).load::<(i32, String, NaiveDateTime)>(connection);
+        r.map(|v| {
+            v.into_iter().map(&Role::new_from_tuple).collect()
+        }).ok()
     }
 }
 
