@@ -16,6 +16,26 @@ pub struct Role {
     pub created_at: NaiveDateTime
 }
 
+impl Role {
+    /**
+     * Roleを作成する
+     */
+    pub fn new(id: i32, name: String, created_at: NaiveDateTime) -> Role {
+        Role {
+            id: id,
+            name: name,
+            created_at: created_at
+        }
+    }
+
+    /**
+     * tupleからRoleを作成する
+     */
+    pub fn new_from_tuple(t: (i32, String, NaiveDateTime)) -> Role {
+        Self::new(t.0, t.1, t.2)
+    }
+}
+
 #[table_name = "roles_permissions"]
 #[derive(AsChangeset, Serialize, Deserialize, Insertable, Queryable, Associations, PartialEq, Debug)]
 #[belongs_to(Role, foreign_key = "role_id")]
