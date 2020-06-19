@@ -1,8 +1,9 @@
 use diesel;
 use diesel::prelude::*;
-use crate::db::DBConnection;
+use crate::db::{connect, DBConnection};
 use chrono::{NaiveDateTime};
 use crate::schema::users;
+use crate::schema::github_users;
 use crate::models::github_user::*;
 use crate::models::users_roles::*;
 
@@ -107,4 +108,23 @@ impl User {
             User::create_with_github_id(github_id, &connection)
         })
     }
+}
+
+#[test]
+fn test_create_with_github_id() {
+    let github_id = 1;
+    let connection = connect().get().expect("cannnot get connection");
+    connection.test_transaction::<_, diesel::result::Error, _>(|| {
+        let user = User::create_with_github_id(github_id, &connection);
+        // 作成できていることを確認する
+        assert_ne!(user, None);
+        // 指定したGitHubのIdでアカウントを作成できているか確認する
+        assert_eq!(
+            github_users::table.filter(github_users::user_id.eq(user.unwrap().id)).get_result::<GitHubUser>(&connection).ok().map(|user| { user.github_id }),
+            Some(github_id)
+        );
+        // GitHub ID の uniqueを確認する -> 同じIDで作成すると失敗する
+        assert_eq!(User::create_with_github_id(github_id, &connection), None);
+        Ok(())
+    });
 }
