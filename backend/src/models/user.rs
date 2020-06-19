@@ -128,3 +128,14 @@ fn test_create_with_github_id() {
         Ok(())
     });
 }
+
+#[test]
+fn test_find_by_github_id() {
+    let github_id = 1;
+    let connection = connect().get().expect("cannnot get connection");
+    connection.test_transaction::<_, diesel::result::Error, _>(|| {
+        // 指定したGitHub Idでユーザを引っ張ってこれるかチェックする
+        assert_eq!(User::create_with_github_id(github_id, &connection), User::find_by_github_id(github_id, &connection));
+        Ok(())
+    });
+}
