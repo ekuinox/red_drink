@@ -5,7 +5,15 @@ on: [push]
 jobs:
   build:
     env:
-      DATABASE_URL: postgres://root:root@localhost:5432/red_drink
+      DATABASE_URL: postgres://red_drink:red_drink@localhost:5432/red_drink
+    services:
+      postgres:
+        image: postgres:12
+      ports:
+        - 5432:5432
+      env:
+       POSTGRES_USER: red_drink
+       POSTGRES_PASSWORD: red_drink 
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -32,6 +40,12 @@ jobs:
         run: |
           cd ./backend
           cargo build --bin add_role_to_user --verbose
+      - name: Setup database
+        run: |
+          cd ./backend
+          cargo install diesel_cli --no-default-features --features postgres
+          diesel setup
+          diesel migration run
       - name: Test server
         run: |
           cd ./backend
