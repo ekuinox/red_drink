@@ -5,19 +5,19 @@ on: [push]
 jobs:
   build:
     env:
-      DATABASE_URL: postgres://postgres:red_drink@localhost:5432/red_drink
+      DATABASE_URL: postgres://red_drink:red_drink@localhost:5432/red_drink
     services:
       postgres:
         image: postgres:12
-      ports:
-        - 5432:5432
-      env:
-        POSTGRES_PASSWORD: red_drink
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: red_drink
+          POSTGRES_PASSWORD: red_drink
     strategy:
       matrix:
         os: [ubuntu-latest]
         rust: [nightly]
-
     runs-on: ${{ matrix.os }}
 
     steps:
