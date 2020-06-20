@@ -1,9 +1,8 @@
 use diesel;
 use diesel::prelude::*;
-use crate::db::{connect, DBConnection};
+use crate::db::DBConnection;
 use chrono::{NaiveDateTime};
 use crate::schema::users;
-use crate::schema::github_users;
 use crate::models::github_user::*;
 use crate::models::users_roles::*;
 
@@ -112,6 +111,9 @@ impl User {
 
 #[test]
 fn test_create_with_github_id() {
+    use crate::schema::github_users;
+    use crate::db::connect;
+
     let github_id = 1;
     let connection = connect().get().expect("cannnot get connection");
     connection.test_transaction::<_, diesel::result::Error, _>(|| {
@@ -131,6 +133,8 @@ fn test_create_with_github_id() {
 
 #[test]
 fn test_find_by_github_id() {
+    use crate::db::connect;
+
     let github_id = 1;
     let connection = connect().get().expect("cannnot get connection");
     connection.test_transaction::<_, diesel::result::Error, _>(|| {
