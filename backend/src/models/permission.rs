@@ -1,7 +1,7 @@
 use diesel;
 use diesel::prelude::*;
 use crate::db::DBConnection;
-use chrono::{Utc, NaiveDateTime};
+use chrono::NaiveDateTime;
 use crate::schema::{permissions};
 
 #[table_name = "permissions"]

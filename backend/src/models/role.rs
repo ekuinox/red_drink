@@ -1,11 +1,9 @@
 use diesel;
 use diesel::prelude::*;
 use crate::db::DBConnection;
-use chrono::{Utc, NaiveDateTime};
+use chrono::NaiveDateTime;
 use crate::schema::{roles, roles_permissions, users_roles};
 use crate::models::permission::Permission;
-
-pub const ADMIN_ROLE_ID: i32 = 0;
 
 #[table_name = "roles"]
 #[derive(AsChangeset, Serialize, Deserialize, Insertable, Queryable, PartialEq, Debug)]
