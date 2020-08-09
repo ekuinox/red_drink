@@ -6,7 +6,7 @@ use crate::schema::{roles, roles_permissions, users_roles};
 use crate::models::permission::Permission;
 
 #[table_name = "roles"]
-#[derive(AsChangeset, Serialize, Deserialize, Insertable, Queryable, PartialEq, Debug)]
+#[derive(Identifiable, AsChangeset, Serialize, Deserialize, Insertable, Queryable, PartialEq, Debug)]
 #[primary_key(id)]
 pub struct Role {
     pub id: i32,
@@ -41,6 +41,17 @@ impl Role {
         let r = query.select((roles::id, roles::name, roles::created_at)).load::<(i32, String, NaiveDateTime)>(connection);
         r.map(|v| {
             v.into_iter().map(&Role::new_from_tuple).collect()
+        }).ok()
+    }
+
+    /**
+     * Roleに紐づくPermissionを取得する
+     */
+    pub fn get_permissions(&self, connection: &DBConnection) -> Option<Vec<Permission>> {
+        RolePermission::belonging_to(self).get_results::<RolePermission>(connection).map(|role_permissions| {
+            role_permissions.iter().map(|role_permission| {
+                Permission::find(role_permission.permission_path, connection).unwrap()
+            }).collect::<Vec<Permission>>()
         }).ok()
     }
 
@@ -86,7 +97,7 @@ impl RoleInsertable {
 }
 
 #[table_name = "roles_permissions"]
-#[derive(AsChangeset, Serialize, Deserialize, Insertable, Queryable, Associations, PartialEq, Debug)]
+#[derive(Identifiable, AsChangeset, Serialize, Deserialize, Insertable, Queryable, Associations, PartialEq, Debug)]
 #[belongs_to(Role, foreign_key = "role_id")]
 #[belongs_to(Permission, foreign_key = "permission_path")]
 #[primary_key(role_id, permission_path)]
