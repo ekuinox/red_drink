@@ -112,6 +112,13 @@ impl User {
     }
 
     /**
+     * Userが指定した権限を所有しているか
+     */
+    pub fn has_permission(&self, required: String, connection: &DBConnection) -> bool {
+        self.get_permissions(connection).map(|permissions| Permission::has_permission(&permissions, required)).is_some()
+    }
+
+    /**
      * ユーザIDから取得する
      */
     pub fn find(id: i32, connection: &DBConnection) -> Option<User> {
