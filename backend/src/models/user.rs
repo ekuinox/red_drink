@@ -110,6 +110,7 @@ impl User {
             permissions.into_iter().collect::<HashSet<Permission>>().into_iter().collect::<Vec<Permission>>()
         })
     }
+
     /**
      * ユーザIDから取得する
      */
