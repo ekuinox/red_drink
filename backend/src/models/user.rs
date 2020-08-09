@@ -1,11 +1,13 @@
 use diesel;
 use diesel::prelude::*;
+use std::collections::HashSet;
 use crate::db::DBConnection;
 use chrono::{NaiveDateTime};
 use crate::schema::users;
 use crate::models::github_user::*;
 use crate::models::users_roles::*;
 use crate::models::role::Role;
+use crate::models::permission::Permission;
 
 /**
  * RedDrinkのユーザ
@@ -95,6 +97,19 @@ impl User {
         }).ok()
     }
 
+    /**
+     * Userが持つPermissionを取得する
+     */
+    pub fn get_permissions(&self, connection: &DBConnection) -> Option<Vec<Permission>> {
+        self.get_roles(connection).map(|roles| {
+            roles.into_iter().fold(Vec::<Permission>::new(), |prev, role| {
+                role.get_permissions(connection).map(|permissions| [&prev[..], &permissions[..]].concat()).unwrap_or(prev)
+            })
+        }).map(|permissions| {
+            // 重複を取り除く
+            permissions.into_iter().collect::<HashSet<Permission>>().into_iter().collect::<Vec<Permission>>()
+        })
+    }
     /**
      * ユーザIDから取得する
      */
