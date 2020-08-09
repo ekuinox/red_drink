@@ -18,6 +18,15 @@ impl Permission {
     pub fn find(path: String, connection: &DBConnection) -> Option<Permission> {
         permissions::table.find(path).get_result::<Permission>(connection).ok()
     }
+
+    /**
+     * Permission配列に欲しいPermissionが含まれているか
+     */
+    pub fn has_permission(permissions: &Vec<Self>, required: String) -> bool {
+        permissions.into_iter().find(|permission| {
+            permission.path == required
+        }).is_some()
+    }
 }
 
 #[table_name = "permissions"]
