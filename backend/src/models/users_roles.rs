@@ -10,7 +10,7 @@ use crate::models::role::Role;
  * Userの所持権限
  */
 #[table_name = "users_roles"]
-#[derive(AsChangeset, Serialize, Deserialize, Insertable, Queryable, Associations, PartialEq, Debug)]
+#[derive(Identifiable, AsChangeset, Serialize, Deserialize, Insertable, Queryable, Associations, PartialEq, Debug)]
 #[belongs_to(User, foreign_key = "user_id")]
 #[belongs_to(Role, foreign_key = "role_id")]
 #[primary_key(role_id, user_id)]

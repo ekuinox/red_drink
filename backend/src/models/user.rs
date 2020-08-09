@@ -5,12 +5,13 @@ use chrono::{NaiveDateTime};
 use crate::schema::users;
 use crate::models::github_user::*;
 use crate::models::users_roles::*;
+use crate::models::role::Role;
 
 /**
  * RedDrinkのユーザ
  */
 #[table_name = "users"]
-#[derive(AsChangeset, Serialize, Deserialize, Insertable, Identifiable, Queryable, PartialEq, Clone, Copy, Debug)]
+#[derive(AsChangeset, Serialize, Deserialize, Insertable, Identifiable, Associations, Queryable, PartialEq, Clone, Copy, Debug)]
 #[primary_key(id)]
 pub struct User {
     pub id: i32,
@@ -81,6 +82,17 @@ impl User {
      */
     pub fn add_role(&self, role_id: i32, connection: &DBConnection) -> bool {
         UsersRoleInsertable::new(self.id, role_id).create(connection)
+    }
+
+    /**
+     * ユーザの持つRoleを取得する
+     */
+    pub fn get_roles(&self, connection: &DBConnection) -> Option<Vec<Role>> {
+        UsersRole::belonging_to(self).get_results::<UsersRole>(connection).map(|users_roles| {
+            users_roles.iter().map(|users_role| {
+                Role::find(users_role.role_id, connection).unwrap()
+            }).collect::<Vec<Role>>()
+        }).ok()
     }
 
     /**
