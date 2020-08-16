@@ -4,6 +4,7 @@ use rocket::request::{self, FromRequest};
 use rocket::{Request, State, Outcome};
 use diesel::pg::PgConnection;
 use diesel::r2d2::{ConnectionManager, Pool, PooledConnection};
+use dotenv_codegen::dotenv;
 
 pub type DBConnection = PgConnection;
 
@@ -11,7 +12,7 @@ pub type DBConnection = PgConnection;
 pub type ConnectionPool = Pool<ConnectionManager<DBConnection>>;
 
 // The URL to the database, set via the `DATABASE_URL` environment variable.
-static DATABASE_URL: &str = env!("DATABASE_URL");
+static DATABASE_URL: &str = dotenv!("DATABASE_URL");
 
 /// Initialize the database pool.
 pub fn connect() -> ConnectionPool {
