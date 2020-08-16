@@ -21,6 +21,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Create .env file
+        uses: SpicyPizza/create-envfile@v1.0
+        with:
+          DATABASE_URL: "postgres://postgres:passwd@localhost:5432/red_drink"
       - uses: actions/checkout@master
       - uses: actions-rs/toolchain@v1
         with:
