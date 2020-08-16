@@ -24,7 +24,8 @@ jobs:
       - name: Create .env file
         uses: SpicyPizza/create-envfile@v1.0
         with:
-          DATABASE_URL: "postgres://postgres:passwd@localhost:5432/red_drink"
+          envkey_DATABASE_URL: "postgres://postgres:passwd@localhost:5432/red_drink"
+          file_name: "./backend/.env"
       - uses: actions/checkout@master
       - uses: actions-rs/toolchain@v1
         with:
