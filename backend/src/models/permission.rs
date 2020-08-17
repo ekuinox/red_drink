@@ -61,8 +61,21 @@ impl Permission {
      */
     pub fn has_permission(permissions: &Vec<Self>, required: String) -> bool {
         let paths = get_parent_paths(&required);
-        true
+        permissions.iter().any(|permission| paths.contains(&permission.path))
     }
+}
+
+#[test]
+fn test_has_permission() {
+    let permissions = vec!["foo.bar.baz", "a", "xxx.*"].into_iter().map(|path| Permission {
+        path: path.to_string(),
+        created_at: chrono::Utc::now().naive_local(),
+        name: "".to_string(),
+        description: None
+    }).collect::<Vec<Permission>>();
+    assert!(Permission::has_permission(&permissions, "foo.bar.baz".to_string()));
+    assert!(!Permission::has_permission(&permissions, "foo.*".to_string()));
+    assert!(Permission::has_permission(&permissions, "xxx.yyy.zzz".to_string()));
 }
 
 #[table_name = "permissions"]
