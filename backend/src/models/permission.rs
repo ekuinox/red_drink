@@ -55,11 +55,17 @@ impl Permission {
     pub fn find(path: String, connection: &DBConnection) -> Option<Permission> {
         permissions::table.find(path).get_result::<Permission>(connection).ok()
     }
+}
 
+pub(crate) trait HasPermission<T, R> {
     /**
      * Permission配列に欲しいPermissionが含まれているか
      */
-    pub fn has_permission(permissions: &Vec<Self>, required: String) -> bool {
+    fn has_permission(permissions: T, required: R) -> bool;
+}
+
+impl HasPermission<&Vec<Permission>, String> for Permission {
+    fn has_permission(permissions: &Vec<Permission>, required: String) -> bool {
         let paths = get_parent_paths(&required);
         permissions.iter().any(|permission| paths.contains(&permission.path))
     }

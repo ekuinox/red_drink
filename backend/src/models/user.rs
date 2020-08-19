@@ -8,6 +8,7 @@ use crate::models::github_user::*;
 use crate::models::users_roles::*;
 use crate::models::role::Role;
 use crate::models::permission::Permission;
+use crate::models::permission::HasPermission;
 
 /**
  * RedDrinkのユーザ
