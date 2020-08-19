@@ -64,24 +64,23 @@ pub(crate) trait HasPermission<T, R> {
     fn has_permission(permissions: T, required: R) -> bool;
 }
 
+impl HasPermission<&Vec<String>, &String> for Permission {
+    fn has_permission(permissions: &Vec<String>, required: &String) -> bool {
+        let paths = get_parent_paths(&required);
+        permissions.into_iter().any(|permission| paths.contains(&permission))
+    }
+}
+
 impl HasPermission<&Vec<Permission>, String> for Permission {
     fn has_permission(permissions: &Vec<Permission>, required: String) -> bool {
-        let paths = get_parent_paths(&required);
-        permissions.iter().any(|permission| paths.contains(&permission.path))
+        Permission::has_permission(&permissions.iter().map(|permissions| permissions.path.clone()).collect::<Vec<String>>(), &required)
     }
 }
 
 #[test]
 fn test_has_permission() {
-    let permissions = vec!["foo.bar.baz", "a", "xxx.*"].into_iter().map(|path| Permission {
-        path: path.to_string(),
-        created_at: chrono::Utc::now().naive_local(),
-        name: "".to_string(),
-        description: None
-    }).collect::<Vec<Permission>>();
-    assert!(Permission::has_permission(&permissions, "foo.bar.baz".to_string()));
-    assert!(!Permission::has_permission(&permissions, "foo.*".to_string()));
-    assert!(Permission::has_permission(&permissions, "xxx.yyy.zzz".to_string()));
+    assert!(Permission::has_permission(&vec!["foo.*".to_string()], &"foo.bar".to_string()));
+    assert!(!Permission::has_permission(&vec!["foo.*".to_string()], &"xxx.yyy".to_string()));
 }
 
 #[table_name = "permissions"]
