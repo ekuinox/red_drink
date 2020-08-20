@@ -19,7 +19,7 @@ fn create_user(github_user_id: i32) -> String {
 }
 
 /// show all users
-fn show_all_user() -> String {
+fn show_all_users() -> String {
     use red_drink::models::user::User;
     if let Ok(connection) = db::connect().get() {
         if let Some(users) = User::all(&connection) {
@@ -75,7 +75,7 @@ fn main() {
             return;
         }
         if let Some(_) = user_command.subcommand_matches("all") {
-            println!("{}", show_all_user());
+            println!("{}", show_all_users());
             return;
         }
     }
