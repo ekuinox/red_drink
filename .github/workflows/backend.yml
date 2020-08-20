@@ -53,10 +53,10 @@ jobs:
         run: |
           cd ./backend
           cargo test --bin red_drink --verbose
-      - name: Test tool `create_user`
+      - name: Test tool `hua`
         run: |
           cd ./backend
-          cargo test --bin create_user --verbose
+          cargo test --bin hua --verbose
       - name: Test tool `add_role_to_user`
         run: |
           cd ./backend
