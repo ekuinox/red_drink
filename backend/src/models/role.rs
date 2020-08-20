@@ -67,6 +67,11 @@ impl Role {
             roles_permissions::role_id.eq(self.id), roles_permissions::permission_path.eq(permission_path))
         ).execute(connection)
     }
+
+    // get all roles
+    pub fn all(connection: &DBConnection) -> Option<Vec<Role>> {
+        roles::table.load::<Role>(connection).ok()
+    }
 }
 
 #[table_name = "roles"]
