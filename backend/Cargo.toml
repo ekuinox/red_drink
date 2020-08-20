@@ -37,9 +37,5 @@ name = "hua"
 path = "src/bin/hua.rs"
 
 [[bin]]
-name = "create_user"
-path = "src/bin/create_user.rs"
-
-[[bin]]
 name = "add_role_to_user"
 path = "src/bin/add_role_to_user.rs"
