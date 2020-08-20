@@ -42,6 +42,27 @@ fn show_all_users() -> String {
     }
 }
 
+/// show all roles
+fn show_all_roles() -> String {
+    use red_drink::models::role::Role;
+    if let Ok(conn) = db::connect().get() {
+        if let Some(roles) = Role::all(&conn) {
+            roles.into_iter().fold(vec![], |mut accumurator, role| {
+                let mut about = "----------\n".to_string();
+                about = about + &format!("id:\t{}\n", role.id);
+                about = about + &format!("name:\t{}\n", role.name);
+                let about = about + "----------\n";
+                accumurator.push(about);
+                accumurator
+            }).join("\n")
+        } else {
+            format!("failed to get roles")
+        }
+    } else {
+        format!("failed to connect database")
+    }
+}
+
 /// red_drink cli tool
 fn main() {
     let matches = App::new("hua")
@@ -63,6 +84,12 @@ fn main() {
                 .about("show all users")
             )
         )
+        .subcommand(SubCommand::with_name("role")
+            .about("role management")
+            .subcommand(SubCommand::with_name("all")
+                .about("show all roles")
+            )
+        )
         .get_matches();
 
     if let Some(user_command) = matches.subcommand_matches("user") {
@@ -76,6 +103,12 @@ fn main() {
         }
         if let Some(_) = user_command.subcommand_matches("all") {
             println!("{}", show_all_users());
+            return;
+        }
+    }
+    if let Some(role_command) = matches.subcommand_matches("role") {
+        if let Some(_) = role_command.subcommand_matches("all") {
+            println!("{}", show_all_roles());
             return;
         }
     }
