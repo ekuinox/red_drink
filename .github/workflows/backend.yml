@@ -35,10 +35,10 @@ jobs:
         run: |
           cd ./backend
           cargo build --bin red_drink --verbose
-      - name: Build tool `create_user`
+      - name: Build tool `hua`
         run: |
           cd ./backend
-          cargo build --bin create_user --verbose
+          cargo build --bin hua --verbose
       - name: Build tool `add_role_to_user`
         run: |
           cd ./backend
