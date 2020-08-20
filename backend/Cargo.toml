@@ -33,6 +33,10 @@ name = "red_drink"
 path = "src/main.rs"
 
 [[bin]]
+name = "hua"
+path = "src/bin/hua.rs"
+
+[[bin]]
 name = "create_user"
 path = "src/bin/create_user.rs"
 
