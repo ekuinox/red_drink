@@ -4,6 +4,7 @@ use std::collections::HashSet;
 use crate::db::DBConnection;
 use chrono::{NaiveDateTime};
 use crate::schema::users;
+use crate::schema::github_users;
 use crate::models::github_user::*;
 use crate::models::users_roles::*;
 use crate::models::role::Role;
@@ -142,6 +143,11 @@ impl User {
         Self::find_by_github_id(github_id, connection).or_else(|| {
             User::create_with_github_id(github_id, &connection)
         })
+    }
+
+    /// get all users
+    pub fn all(connection: &DBConnection) -> Option<Vec<(User, Option<GitHubUser>)>> {
+        users::table.left_join(github_users::table).load::<(User, Option<GitHubUser>)>(connection).ok()
     }
 }
 
