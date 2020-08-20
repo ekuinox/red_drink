@@ -18,6 +18,30 @@ fn create_user(github_user_id: i32) -> String {
     }
 }
 
+/// show all users
+fn show_all_user() -> String {
+    use red_drink::models::user::User;
+    if let Ok(connection) = db::connect().get() {
+        if let Some(users) = User::all(&connection) {
+            users.into_iter().fold(vec![], |mut accumurator, (user, github_user_opt)| {
+                // create user's detail string
+                let mut about = "----------\n".to_string();
+                about = about + &format!("id:\t{}\n", user.id);
+                if let Some(github_user) = github_user_opt {
+                    about = about + &format!("github:\t{}\n", github_user.github_id);
+                }
+                let about = about + "----------\n";
+                accumurator.push(about);
+                accumurator
+            }).join("\n")
+        } else {
+            format!("failed to get users")
+        }
+    } else {
+        format!("failed to connect database")
+    }
+}
+
 /// red_drink cli tool
 fn main() {
     let matches = App::new("hua")
@@ -35,6 +59,9 @@ fn main() {
                     .required(true)
                 )
             )
+            .subcommand(SubCommand::with_name("all")
+                .about("show all users")
+            )
         )
         .get_matches();
 
@@ -45,6 +72,10 @@ fn main() {
             } else {
                 println!("couldn't parse specified github id.");
             }
+            return;
+        }
+        if let Some(_) = user_command.subcommand_matches("all") {
+            println!("{}", show_all_user());
             return;
         }
     }
