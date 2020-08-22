@@ -22,7 +22,7 @@ fn create_user(github_user_id: i32) -> String {
 fn show_all_users() -> String {
     use red_drink::models::user::User;
     if let Ok(connection) = db::connect().get() {
-        if let Some(users) = User::all(&connection) {
+        if let Some(users) = User::all_with_github(&connection) {
             users.into_iter().fold(vec![], |mut accumurator, (user, github_user_opt)| {
                 // create user's detail string
                 let mut about = "----------\n".to_string();
