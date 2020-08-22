@@ -39,10 +39,6 @@ jobs:
         run: |
           cd ./backend
           cargo build --bin hua --verbose
-      - name: Build tool `add_role_to_user`
-        run: |
-          cd ./backend
-          cargo build --bin add_role_to_user --verbose
       - name: Setup database
         run: |
           cd ./backend
@@ -57,7 +53,3 @@ jobs:
         run: |
           cd ./backend
           cargo test --bin hua --verbose
-      - name: Test tool `add_role_to_user`
-        run: |
-          cd ./backend
-          cargo test --bin add_role_to_user --verbose
