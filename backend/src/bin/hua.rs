@@ -4,6 +4,7 @@ extern crate red_drink;
 use clap::{App, Arg, SubCommand};
 use red_drink::db;
 
+/// use connection
 fn with_connection<F>(f: F) -> String where F: FnOnce(&db::DBConnection) -> String {
     match db::connect().get() {
         Ok(conn) => f(&conn),
@@ -13,22 +14,20 @@ fn with_connection<F>(f: F) -> String where F: FnOnce(&db::DBConnection) -> Stri
 /// create user with github user id
 fn create_user(github_user_id: i32) -> String {
     use red_drink::models::user::User;
-    if let Ok(connection) = db::connect().get() {
-        if let Some(user) = User::create_with_github_id(github_user_id, &connection) {
+    with_connection(|conn| {
+        if let Some(user) = User::create_with_github_id(github_user_id, conn) {
             format!("succeed to create user. user_id: {}", user.id)
         } else {
             format!("failed to create user")
         }
-    } else {
-        format!("failed to connect database")
-    }
+    })
 }
 
 /// show all users
 fn show_all_users() -> String {
     use red_drink::models::user::User;
-    if let Ok(connection) = db::connect().get() {
-        if let Some(users) = User::all_with_github(&connection) {
+    with_connection(|conn| {
+        if let Some(users) = User::all_with_github(conn) {
             users.into_iter().fold(vec![], |mut accumurator, (user, github_user_opt)| {
                 // create user's detail string
                 let mut about = "----------\n".to_string();
@@ -43,15 +42,13 @@ fn show_all_users() -> String {
         } else {
             format!("failed to get users")
         }
-    } else {
-        format!("failed to connect database")
-    }
+    })
 }
 
 /// show all roles
 fn show_all_roles() -> String {
     use red_drink::models::role::Role;
-    if let Ok(conn) = db::connect().get() {
+    with_connection(|conn| {
         if let Some(roles) = Role::all(&conn) {
             roles.into_iter().fold(vec![], |mut accumurator, role| {
                 let mut about = "----------\n".to_string();
@@ -64,9 +61,7 @@ fn show_all_roles() -> String {
         } else {
             format!("failed to get roles")
         }
-    } else {
-        format!("failed to connect database")
-    }
+    })
 }
 
 fn add_roles_to_user(user_id: i32, role_ids: Vec<i32>) -> String {
