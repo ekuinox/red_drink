@@ -4,6 +4,12 @@ extern crate red_drink;
 use clap::{App, Arg, SubCommand};
 use red_drink::db;
 
+fn with_connection<F>(f: F) -> String where F: FnOnce(&db::DBConnection) -> String {
+    match db::connect().get() {
+        Ok(conn) => f(&conn),
+        Err(err) => format!("failed to connect database. {:?}", err)
+    }
+}
 /// create user with github user id
 fn create_user(github_user_id: i32) -> String {
     use red_drink::models::user::User;
@@ -63,6 +69,20 @@ fn show_all_roles() -> String {
     }
 }
 
+fn add_roles_to_user(user_id: i32, role_ids: Vec<i32>) -> String {
+    use red_drink::models::user::User;
+    with_connection(|conn| {
+        if let Some(user) = User::find(user_id, &conn) {
+            let results = role_ids.into_iter().map(|role_id| (user.add_role(role_id, &conn), role_id)).collect::<Vec<(bool, i32)>>();
+            let successes = results.iter().filter(|(ok, _)| *ok).map(|(_, id)| *id).collect::<Vec<i32>>();
+            let failures = results.iter().filter(|(ok, _)| !ok).map(|(_, id)| *id).collect::<Vec<i32>>();
+            format!("added roles: {:?}\nfailure ids: {:?}\n", successes, failures)
+        } else {
+            "failed to find user".to_string()
+        }
+    })
+}
+
 /// red_drink cli tool
 fn main() {
     let matches = App::new("hua")
@@ -82,6 +102,22 @@ fn main() {
             )
             .subcommand(SubCommand::with_name("all")
                 .about("show all users")
+            )
+            .subcommand(SubCommand::with_name("add-role")
+                .about("add role to user")
+                .arg(Arg::with_name("user")
+                    .long("user-id")
+                    .short("u")
+                    .value_name("User ID")
+                    .required(true)
+                )
+                .arg(Arg::with_name("role")
+                    .long("role-id")
+                    .short("r")
+                    .value_name("Role ID")
+                    .required(true)
+                    .multiple(true)
+                )
             )
         )
         .subcommand(SubCommand::with_name("role")
@@ -104,6 +140,15 @@ fn main() {
         if let Some(_) = user_command.subcommand_matches("all") {
             println!("{}", show_all_users());
             return;
+        }
+        if let Some(add_role_command) = user_command.subcommand_matches("add-role") {
+            if let (Some(user_id), Some(role_ids)) = (
+                add_role_command.value_of("user").and_then(|id| id.parse::<i32>().ok()) ,
+                add_role_command.values_of("role").map(|v| v.flat_map(|id| id.parse::<i32>().ok()).collect::<Vec<i32>>())
+            ) {
+                println!("{}", add_roles_to_user(user_id, role_ids));
+                return;
+            }
         }
     }
     if let Some(role_command) = matches.subcommand_matches("role") {
