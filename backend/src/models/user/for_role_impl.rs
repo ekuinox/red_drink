@@ -35,7 +35,9 @@ impl User {
     }
 
     /// Userが指定した権限を所有しているか
-    pub fn has_permission(&self, required: String, connection: &DBConnection) -> bool {
-        self.get_permissions(connection).map(|permissions| Permission::has_permission(&permissions, required)).is_some()
+    pub fn has_permission(&self, required: String, conn: &DBConnection) -> bool {
+        self.get_permissions(conn).map(
+            |permissions| Permission::has_permission(&permissions, required)
+        ).unwrap_or(false)
     }
 }
