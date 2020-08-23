@@ -13,10 +13,10 @@ use crate::models::role::Role;
 #[derive(Identifiable, AsChangeset, Serialize, Deserialize, Insertable, Queryable, Associations, PartialEq, Debug)]
 #[belongs_to(User, foreign_key = "user_id")]
 #[belongs_to(Role, foreign_key = "role_id")]
-#[primary_key(role_id, user_id)]
+#[primary_key(user_id, role_id)]
 pub struct UsersRole {
-    pub role_id: i32,
     pub user_id: i32,
+    pub role_id: i32,
     pub created_at: NaiveDateTime
 }
 
@@ -26,8 +26,8 @@ pub struct UsersRole {
 #[table_name = "users_roles"]
 #[derive(Insertable, Debug)]
 pub struct UsersRoleInsertable {
-    pub role_id: i32,
-    pub user_id: i32
+    pub user_id: i32,
+    pub role_id: i32
 }
 
 impl UsersRoleInsertable {
