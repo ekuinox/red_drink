@@ -30,7 +30,7 @@ impl User {
         self.get_roles(connection).map(
             |roles| roles.into_iter().flat_map(
                 |role| role.get_permissions(connection)
-            ).collect::<Vec<Vec<Permission>>>().concat()
+            ).flatten()
         ).map( // 重複の削除
             |permissions| permissions.into_iter()
                 .collect::<HashSet<Permission>>()
