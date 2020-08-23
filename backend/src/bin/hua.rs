@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate clap;
+
 mod subcommands;
 
 use clap::{App};
@@ -14,9 +17,9 @@ pub fn with_connection<F>(f: F) -> String where F: FnOnce(&db::DBConnection) -> 
 
 /// red_drink cli tool
 fn main() {
-    let matches = App::new("hua")
-        .version("0.0.1")
-        .author("ekuinox <depkey@me.com>")
+    let matches = App::new(format!("hua <{}>", crate_name!()))
+        .version(crate_version!())
+        .author(crate_authors!())
         .about("red_drink server cli tools")
         .subcommands(create_subcommands())
         .get_matches();
