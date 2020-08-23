@@ -31,7 +31,12 @@ impl User {
             |roles| roles.into_iter().flat_map(
                 |role| role.get_permissions(connection)
             ).collect::<Vec<Vec<Permission>>>().concat()
-        ).map(|permissions| permissions.into_iter().collect::<HashSet<Permission>>().into_iter().collect::<Vec<Permission>>())
+        ).map( // 重複の削除
+            |permissions| permissions.into_iter()
+                .collect::<HashSet<Permission>>()
+                .into_iter()
+                .collect::<Vec<Permission>>()
+        )
     }
 
     /// Userが指定した権限を所有しているか
