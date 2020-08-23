@@ -27,14 +27,11 @@ impl User {
 
     /// Userが持つPermissionを取得する
     pub fn get_permissions(&self, connection: &DBConnection) -> Option<Vec<Permission>> {
-        self.get_roles(connection).map(|roles| {
-            roles.into_iter().fold(Vec::<Permission>::new(), |prev, role| {
-                role.get_permissions(connection).map(|permissions| [&prev[..], &permissions[..]].concat()).unwrap_or(prev)
-            })
-        }).map(|permissions| {
-            // 重複を取り除く
-            permissions.into_iter().collect::<HashSet<Permission>>().into_iter().collect::<Vec<Permission>>()
-        })
+        self.get_roles(connection).map(
+            |roles| roles.into_iter().flat_map(
+                |role| role.get_permissions(connection)
+            ).collect::<Vec<Vec<Permission>>>().concat()
+        ).map(|permissions| permissions.into_iter().collect::<HashSet<Permission>>().into_iter().collect::<Vec<Permission>>())
     }
 
     /// Userが指定した権限を所有しているか
