@@ -49,8 +49,8 @@ impl Role {
      */
     pub fn get_permissions(&self, connection: &DBConnection) -> Option<Vec<Permission>> {
         RolePermission::belonging_to(self).get_results::<RolePermission>(connection).map(|role_permissions| {
-            role_permissions.iter().map(|role_permission| {
-                Permission::find(role_permission.permission_path.clone(), connection).unwrap()
+            role_permissions.iter().flat_map(|role_permission| {
+                Permission::find(role_permission.permission_path.clone(), connection)
             }).collect::<Vec<Permission>>()
         }).ok()
     }
