@@ -1,6 +1,6 @@
 mod subcommands;
 
-use clap::{App, SubCommand};
+use clap::{App};
 use red_drink::db;
 use subcommands::*;
 
@@ -18,19 +18,7 @@ fn main() {
         .version("0.0.1")
         .author("ekuinox <depkey@me.com>")
         .about("red_drink server cli tools")
-        .subcommand(UserCommand::create_subcommand())
-        .subcommand(SubCommand::with_name("role")
-            .about("role management")
-            .subcommand(SubCommand::with_name("all")
-                .about("show all roles")
-            )
-        )
+        .subcommands(create_subcommands())
         .get_matches();
-
-    let message = match matches.subcommand() {
-        (USER_COMMAND_NAME, Some(command)) => UserCommand::run(command),
-        (ROLE_COMMAND_NAME, Some(command)) => RoleCommand::run(command),
-        _ => "".to_string()
-    };
-    println!("{}", message);
+    println!("{}", run(&matches));
 }
