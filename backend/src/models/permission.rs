@@ -8,10 +8,10 @@ use crate::schema::{permissions};
 #[derive(AsChangeset, Serialize, Deserialize, Insertable, Queryable, PartialEq, Eq, Hash, Clone, Debug)]
 #[primary_key(path)]
 pub struct Permission {
-    path: String,
-    name: String,
-    description: Option<String>,
-    created_at: NaiveDateTime,
+    pub path: String,
+    pub name: String,
+    pub description: Option<String>,
+    pub created_at: NaiveDateTime,
 }
 
 /**
