@@ -12,25 +12,6 @@ pub fn with_connection<F>(f: F) -> String where F: FnOnce(&db::DBConnection) -> 
     }
 }
 
-/// show all roles
-fn show_all_roles() -> String {
-    use red_drink::models::role::Role;
-    with_connection(|conn| {
-        if let Some(roles) = Role::all(&conn) {
-            roles.into_iter().fold(vec![], |mut accumurator, role| {
-                let mut about = "----------\n".to_string();
-                about = about + &format!("id:\t{}\n", role.id);
-                about = about + &format!("name:\t{}\n", role.name);
-                let about = about + "----------\n";
-                accumurator.push(about);
-                accumurator
-            }).join("\n")
-        } else {
-            format!("failed to get roles")
-        }
-    })
-}
-
 /// red_drink cli tool
 fn main() {
     let matches = App::new("hua")
@@ -48,7 +29,7 @@ fn main() {
 
     let message = match matches.subcommand() {
         (USER_COMMAND_NAME, Some(command)) => UserCommand::run(command),
-        ("all", Some(command)) => command.subcommand_matches("all").map(|_| show_all_roles()).unwrap_or("".to_string()),
+        (ROLE_COMMAND_NAME, Some(command)) => RoleCommand::run(command),
         _ => "".to_string()
     };
     println!("{}", message);

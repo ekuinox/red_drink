@@ -7,3 +7,6 @@ pub trait HuaSubCommand {
 
 pub mod user;
 pub use user::*;
+
+pub mod role;
+pub use role::*;
