@@ -56,7 +56,7 @@ impl Role {
     }
 
     pub fn find(id: i32, connection: &DBConnection) -> Option<Role> {
-        roles::table.find(id).get_result::<Role>(connection).ok()
+        roles::table.find(id).first::<Role>(connection).ok()
     }
 
     /**
