@@ -46,3 +46,45 @@ impl User {
         ).unwrap_or(false)
     }
 }
+
+#[test]
+fn test_has_permission() {
+    use crate::db::connect;
+    let conn = connect().get().expect("cannnot get connection");
+    conn.test_transaction::<_, diesel::result::Error, _>(|| {
+        use crate::models::user::UserInsertable;
+        use crate::models::role::RoleInsertable;
+        let user = User::create(UserInsertable::new(), &conn).expect("cannot create user");
+        let role = RoleInsertable::new("test_role".to_string()).create(&conn).expect("cannot create role");
+        if !user.add_role(role.id, &conn) {
+            panic!("cannot attach role to user");
+        }
+        let paths = vec!["foo.bar".to_string(), "xxx.*".to_string()];
+        paths.into_iter().for_each(|path| {
+            use crate::models::permission::{Permission, PermissionInsertable};
+            let Permission { path, .. } = PermissionInsertable::new(path.clone(), path.clone(), None)
+                .create(&conn).expect("cannot create role");
+            role.attach_permission(path, &conn).expect("cannot attach permission to role");
+        });
+
+        // foo.barではもちろん*にはアクセスできない
+        assert!(!user.has_permission("*".to_string(), &conn));
+        // foo.*にもアクセスできない
+        assert!(!user.has_permission("foo.*".to_string(), &conn));
+        assert!(user.has_permission("foo.bar".to_string(), &conn));
+        // エッbarより下にノードあるの!?という状況には対応しない
+        assert!(!user.has_permission("foo.bar.baz".to_string(), &conn));
+        assert!(!user.has_permission("foo.bar.*".to_string(), &conn));
+
+        // xxx.*にアクセスできる
+        assert!(user.has_permission("xxx.*".to_string(), &conn));
+        // 子にもアクセスできる
+        assert!(user.has_permission("xxx.yyy".to_string(), &conn));
+        // 孫にもアクセスできる
+        assert!(user.has_permission("xxx.yyy.zzz".to_string(), &conn));
+        // xxx自体にはアクセスできない
+        assert!(!user.has_permission("xxx".to_string(), &conn));
+
+        Ok(())
+    });
+}
