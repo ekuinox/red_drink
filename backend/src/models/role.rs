@@ -2,7 +2,7 @@ use diesel;
 use diesel::prelude::*;
 use crate::db::DBConnection;
 use chrono::NaiveDateTime;
-use crate::schema::{roles, roles_permissions, users_roles};
+use crate::schema::{roles, accessibles, users_roles};
 use crate::models::permission::Permission;
 
 #[table_name = "roles"]
@@ -63,8 +63,8 @@ impl Role {
      * RoleにPermissionを紐付ける
      */
     pub fn attach_permission(&self, permission_path: String, connection: &DBConnection) -> QueryResult<usize> {
-        diesel::insert_into(roles_permissions::table).values((
-            roles_permissions::role_id.eq(self.id), roles_permissions::permission_path.eq(permission_path))
+        diesel::insert_into(accessibles::table).values((
+            accessibles::role_id.eq(self.id), accessibles::permission_path.eq(permission_path))
         ).execute(connection)
     }
 
@@ -101,7 +101,7 @@ impl RoleInsertable {
     }
 }
 
-#[table_name = "roles_permissions"]
+#[table_name = "accessibles"]
 #[derive(Identifiable, AsChangeset, Serialize, Deserialize, Insertable, Queryable, Associations, PartialEq, Debug)]
 #[belongs_to(Role, foreign_key = "role_id")]
 #[belongs_to(Permission, foreign_key = "permission_path")]
