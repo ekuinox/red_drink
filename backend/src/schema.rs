@@ -27,7 +27,7 @@ table! {
     resources (id) {
         id -> Varchar,
         name -> Varchar,
-        descrption -> Varchar,
+        description -> Varchar,
         created_at -> Timestamp,
     }
 }
