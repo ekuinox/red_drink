@@ -16,6 +16,15 @@ table! {
 }
 
 table! {
+    resources (id) {
+        id -> Varchar,
+        name -> Varchar,
+        descrption -> Varchar,
+        created_at -> Timestamp,
+    }
+}
+
+table! {
     roles (id) {
         id -> Int4,
         name -> Varchar,
@@ -55,6 +64,7 @@ joinable!(users_roles -> users (user_id));
 allow_tables_to_appear_in_same_query!(
     github_users,
     permissions,
+    resources,
     roles,
     roles_permissions,
     users,
