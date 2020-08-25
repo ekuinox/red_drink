@@ -7,8 +7,8 @@ mod resource_impl;
 #[derive(Serialize, Deserialize, AsChangeset, Insertable, Identifiable, Associations, Queryable, PartialEq, Clone, Debug)]
 #[primary_key(id)]
 pub struct Resource {
-    id: String,
-    name: String,
-    description: String,
-    created_at: NaiveDateTime
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub created_at: NaiveDateTime
 }
