@@ -7,7 +7,7 @@ pub trait New<T, Args> {
 
 /// create model with save to db
 pub trait Create<T, E, Args> {
-    fn create(args: Args) -> Result<T, E>;
+    fn create(args: Args, conn:  &DBConnection) -> Result<T, E>;
 }
 
 /// save model
