@@ -1,4 +1,4 @@
-create table roles_permissions (
+create table accessibles (
     role_id integer not null,
     permission_path varchar not null,
     created_at timestamp not null default current_timestamp,
