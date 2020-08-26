@@ -4,7 +4,7 @@ use diesel;
 use diesel::prelude::*;
 use diesel::associations::HasTable;
 use crate::db::DBConnection;
-use crate::models::{New, Save, Find, Resource};
+use crate::models::{traits::*, Resource};
 
 impl New<Resource, (String, String, String, NaiveDateTime)> for Resource {
     fn new((id, name, description, created_at): (String, String, String, NaiveDateTime)) -> Resource {
