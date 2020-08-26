@@ -2,6 +2,7 @@ table! {
     accessibles (role_id, permission_path) {
         role_id -> Int4,
         permission_path -> Varchar,
+        resource_id -> Nullable<Varchar>,
         created_at -> Timestamp,
     }
 }
@@ -56,6 +57,7 @@ table! {
 }
 
 joinable!(accessibles -> permissions (permission_path));
+joinable!(accessibles -> resources (resource_id));
 joinable!(accessibles -> roles (role_id));
 joinable!(github_users -> users (user_id));
 joinable!(users_roles -> roles (role_id));
