@@ -1,5 +1,5 @@
 insert into accessibles (
-    role_id, permission_path
+    role_id, permission_path, resource_id
 ) values (
-    0, '*'
+    0, '*', '*'
 )

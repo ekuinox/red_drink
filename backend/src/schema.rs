@@ -1,8 +1,8 @@
 table! {
-    accessibles (role_id, permission_path) {
+    accessibles (role_id, permission_path, resource_id) {
         role_id -> Int4,
         permission_path -> Varchar,
-        resource_id -> Nullable<Varchar>,
+        resource_id -> Varchar,
         created_at -> Timestamp,
     }
 }
