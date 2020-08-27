@@ -5,7 +5,8 @@ use chrono::NaiveDateTime;
 use crate::schema::{permissions};
 
 #[table_name = "permissions"]
-#[derive(AsChangeset, Serialize, Deserialize, Insertable, Queryable, PartialEq, Eq, Hash, Clone, Debug)]
+#[derive(AsChangeset, Serialize, Deserialize, Identifiable, Insertable, Queryable, PartialEq, Eq, Hash, Clone, Debug)]
+#[primary_key(path)]
 #[primary_key(path)]
 pub struct Permission {
     pub path: String,
