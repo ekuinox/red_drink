@@ -2,6 +2,7 @@ use chrono::NaiveDateTime;
 use crate::schema::accessibles;
 use crate::models::{Resource, Role, Permission};
 
+mod accessible_impl;
 mod create_impl;
 
 #[table_name = "accessibles"]
