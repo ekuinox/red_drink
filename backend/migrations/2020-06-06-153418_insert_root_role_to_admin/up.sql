@@ -1,5 +1,5 @@
-insert into roles_permissions (
-    role_id, permission_path
+insert into accessibles (
+    role_id, permission_path, resource_id
 ) values (
-    0, '*'
+    0, '*', '*'
 )

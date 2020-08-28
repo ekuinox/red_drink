@@ -2,8 +2,10 @@ use diesel;
 use diesel::prelude::*;
 use crate::db::DBConnection;
 use chrono::NaiveDateTime;
-use crate::schema::{roles, roles_permissions, users_roles};
+use crate::schema::{roles, users_roles};
+use crate::models::traits::*;
 use crate::models::permission::Permission;
+use crate::models::Accessible;
 
 #[table_name = "roles"]
 #[derive(Identifiable, AsChangeset, Serialize, Deserialize, Insertable, Queryable, PartialEq, Debug)]
@@ -47,12 +49,11 @@ impl Role {
     /**
      * Roleに紐づくPermissionを取得する
      */
-    pub fn get_permissions(&self, connection: &DBConnection) -> Option<Vec<Permission>> {
-        RolePermission::belonging_to(self).get_results::<RolePermission>(connection).map(|role_permissions| {
-            role_permissions.iter().flat_map(|role_permission| {
-                Permission::find(role_permission.permission_path.clone(), connection)
-            }).collect::<Vec<Permission>>()
-        }).ok()
+    pub fn get_permissions(&self, resource_id: Option<String>, conn: &DBConnection) -> Option<Vec<Permission>> {
+        match resource_id {
+            Some(id) => Accessible::get_permissions(self.id, id, conn),
+            None => Accessible::get_permissions_for_root(self.id, conn)
+        }.ok()
     }
 
     pub fn find(id: i32, connection: &DBConnection) -> Option<Role> {
@@ -60,12 +61,14 @@ impl Role {
     }
 
     /**
-     * RoleにPermissionを紐付ける
+     * Roleにリソースに対してのPermissionを紐付ける
      */
-    pub fn attach_permission(&self, permission_path: String, connection: &DBConnection) -> QueryResult<usize> {
-        diesel::insert_into(roles_permissions::table).values((
-            roles_permissions::role_id.eq(self.id), roles_permissions::permission_path.eq(permission_path))
-        ).execute(connection)
+    pub fn attach_permission(&self, permission_path: String, resource_id: Option<String>, conn: &DBConnection) -> Result<Accessible, diesel::result::Error> {
+        if let Some(resource_id) = resource_id {
+            Accessible::create((self.id, permission_path, resource_id), conn)
+        } else {
+            Accessible::create((self.id, permission_path), conn)
+        }
     }
 
     // get all roles
@@ -99,15 +102,4 @@ impl RoleInsertable {
                 Role::find(id, connection)
             })
     }
-}
-
-#[table_name = "roles_permissions"]
-#[derive(Identifiable, AsChangeset, Serialize, Deserialize, Insertable, Queryable, Associations, PartialEq, Debug)]
-#[belongs_to(Role, foreign_key = "role_id")]
-#[belongs_to(Permission, foreign_key = "permission_path")]
-#[primary_key(role_id, permission_path)]
-pub struct RolePermission {
-    pub role_id: i32,
-    pub permission_path: String,
-    pub created_at: NaiveDateTime
 }

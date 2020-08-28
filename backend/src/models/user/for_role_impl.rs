@@ -26,10 +26,10 @@ impl User {
     }
 
     /// Userが持つPermissionを取得する
-    pub fn get_permissions(&self, connection: &DBConnection) -> Option<Vec<Permission>> {
+    pub fn get_permissions(&self, resource_id: Option<String>, connection: &DBConnection) -> Option<Vec<Permission>> {
         self.get_roles(connection).map(
             |roles| roles.into_iter().flat_map(
-                |role| role.get_permissions(connection)
+                |role| role.get_permissions(resource_id.clone(), connection)
             ).flatten()
         ).map( // 重複の削除
             |permissions| permissions.into_iter()
@@ -39,9 +39,9 @@ impl User {
         )
     }
 
-    /// Userが指定した権限を所有しているか
-    pub fn has_permission(&self, required: String, conn: &DBConnection) -> bool {
-        self.get_permissions(conn).map(
+    /// Userが指定したリソースに対する権限を所有しているか
+    pub fn has_permission(&self, required: String, resource_id: Option<String>, conn: &DBConnection) -> bool {
+        self.get_permissions(resource_id, conn).map(
             |permissions| Permission::has_permission(&permissions, required)
         ).unwrap_or(false)
     }
@@ -52,8 +52,10 @@ fn test_has_permission() {
     use crate::db::connect;
     let conn = connect().get().expect("cannnot get connection");
     conn.test_transaction::<_, diesel::result::Error, _>(|| {
+        use crate::models::traits::Create;
         use crate::models::user::UserInsertable;
         use crate::models::role::RoleInsertable;
+        use crate::models::Accessible;
         let user = User::create(UserInsertable::new(), &conn).expect("cannot create user");
         let role = RoleInsertable::new("test_role".to_string()).create(&conn).expect("cannot create role");
         if !user.add_role(role.id, &conn) {
@@ -64,26 +66,27 @@ fn test_has_permission() {
             use crate::models::permission::{Permission, PermissionInsertable};
             let Permission { path, .. } = PermissionInsertable::new(path.clone(), path.clone(), None)
                 .create(&conn).expect("cannot create role");
-            role.attach_permission(path, &conn).expect("cannot attach permission to role");
+            // リソースは指定せず行う
+            assert!(Accessible::create((role.id, path), &conn).is_ok());
         });
 
         // foo.barではもちろん*にはアクセスできない
-        assert!(!user.has_permission("*".to_string(), &conn));
+        assert!(!user.has_permission("*".to_string(), None, &conn));
         // foo.*にもアクセスできない
-        assert!(!user.has_permission("foo.*".to_string(), &conn));
-        assert!(user.has_permission("foo.bar".to_string(), &conn));
+        assert!(!user.has_permission("foo.*".to_string(), None, &conn));
+        assert!(user.has_permission("foo.bar".to_string(), None, &conn));
         // エッbarより下にノードあるの!?という状況には対応しない
-        assert!(!user.has_permission("foo.bar.baz".to_string(), &conn));
-        assert!(!user.has_permission("foo.bar.*".to_string(), &conn));
+        assert!(!user.has_permission("foo.bar.baz".to_string(), None, &conn));
+        assert!(!user.has_permission("foo.bar.*".to_string(), None, &conn));
 
         // xxx.*にアクセスできる
-        assert!(user.has_permission("xxx.*".to_string(), &conn));
+        assert!(user.has_permission("xxx.*".to_string(), None, &conn));
         // 子にもアクセスできる
-        assert!(user.has_permission("xxx.yyy".to_string(), &conn));
+        assert!(user.has_permission("xxx.yyy".to_string(), None, &conn));
         // 孫にもアクセスできる
-        assert!(user.has_permission("xxx.yyy.zzz".to_string(), &conn));
+        assert!(user.has_permission("xxx.yyy.zzz".to_string(), None, &conn));
         // xxx自体にはアクセスできない
-        assert!(!user.has_permission("xxx".to_string(), &conn));
+        assert!(!user.has_permission("xxx".to_string(), None, &conn));
 
         Ok(())
     });

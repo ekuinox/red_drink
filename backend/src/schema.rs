@@ -1,4 +1,13 @@
 table! {
+    accessibles (role_id, permission_path, resource_id) {
+        role_id -> Int4,
+        permission_path -> Varchar,
+        resource_id -> Varchar,
+        created_at -> Timestamp,
+    }
+}
+
+table! {
     github_users (github_id) {
         github_id -> Int4,
         user_id -> Int4,
@@ -16,17 +25,18 @@ table! {
 }
 
 table! {
-    roles (id) {
-        id -> Int4,
+    resources (id) {
+        id -> Varchar,
         name -> Varchar,
+        description -> Varchar,
         created_at -> Timestamp,
     }
 }
 
 table! {
-    roles_permissions (role_id, permission_path) {
-        role_id -> Int4,
-        permission_path -> Varchar,
+    roles (id) {
+        id -> Int4,
+        name -> Varchar,
         created_at -> Timestamp,
     }
 }
@@ -46,17 +56,19 @@ table! {
     }
 }
 
+joinable!(accessibles -> permissions (permission_path));
+joinable!(accessibles -> resources (resource_id));
+joinable!(accessibles -> roles (role_id));
 joinable!(github_users -> users (user_id));
-joinable!(roles_permissions -> permissions (permission_path));
-joinable!(roles_permissions -> roles (role_id));
 joinable!(users_roles -> roles (role_id));
 joinable!(users_roles -> users (user_id));
 
 allow_tables_to_appear_in_same_query!(
+    accessibles,
     github_users,
     permissions,
+    resources,
     roles,
-    roles_permissions,
     users,
     users_roles,
 );
