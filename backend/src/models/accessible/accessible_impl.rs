@@ -26,4 +26,11 @@ impl Accessible {
     pub fn get_permissions_for_root(role_id: i32, conn: &DBConnection) -> Result<Vec<Permission>, DieselError> {
         Self::get_permissions(role_id, "*".to_string(), conn)
     }
+    /// Roleが持つすべての権限を取得する
+    pub fn get_permissions_all_with_resource(role_id: i32, conn: &DBConnection) -> Result<Vec<(String, String)>, DieselError> {
+        Self::table()
+            .filter(accessibles::role_id.eq(role_id))
+            .select((accessibles::permission_path, accessibles::resource_id))
+            .get_results::<(String, String)>(conn)
+    }
 }
