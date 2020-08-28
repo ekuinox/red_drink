@@ -3,6 +3,7 @@ use diesel::prelude::*;
 use crate::db::DBConnection;
 use chrono::NaiveDateTime;
 use crate::schema::{roles, accessibles, users_roles};
+use crate::models::traits::*;
 use crate::models::permission::Permission;
 use crate::models::Accessible;
 
@@ -60,12 +61,14 @@ impl Role {
     }
 
     /**
-     * RoleにPermissionを紐付ける
+     * Roleにリソースに対してのPermissionを紐付ける
      */
-    pub fn attach_permission(&self, permission_path: String, connection: &DBConnection) -> QueryResult<usize> {
-        diesel::insert_into(accessibles::table).values((
-            accessibles::role_id.eq(self.id), accessibles::permission_path.eq(permission_path))
-        ).execute(connection)
+    pub fn attach_permission(&self, permission_path: String, resource_id: Option<String>, conn: &DBConnection) -> Result<Accessible, diesel::result::Error> {
+        if let Some(resource_id) = resource_id {
+            Accessible::create((self.id, permission_path, resource_id), conn)
+        } else {
+            Accessible::create((self.id, permission_path), conn)
+        }
     }
 
     // get all roles
