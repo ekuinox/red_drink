@@ -4,6 +4,7 @@ use crate::db::DBConnection;
 use chrono::NaiveDateTime;
 use crate::schema::{roles, accessibles, users_roles};
 use crate::models::permission::Permission;
+use crate::models::Accessible;
 
 #[table_name = "roles"]
 #[derive(Identifiable, AsChangeset, Serialize, Deserialize, Insertable, Queryable, PartialEq, Debug)]
@@ -47,8 +48,11 @@ impl Role {
     /**
      * Roleに紐づくPermissionを取得する
      */
-    pub fn get_permissions(&self, connection: &DBConnection) -> Option<Vec<Permission>> {
-        None // ビルドこけるからNone返しとくわ ナンてこったガハハ！
+    pub fn get_permissions(&self, resource_id: Option<String>, conn: &DBConnection) -> Option<Vec<Permission>> {
+        match resource_id {
+            Some(id) => Accessible::get_permissions(self.id, id, conn),
+            None => Accessible::get_permissions_for_root(self.id, conn)
+        }.ok()
     }
 
     pub fn find(id: i32, connection: &DBConnection) -> Option<Role> {
