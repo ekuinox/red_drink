@@ -2,7 +2,6 @@ use diesel;
 use diesel::prelude::*;
 use diesel::associations::HasTable;
 use diesel::result::Error as DieselError;
-use uuid::Uuid;
 use crate::db::DBConnection;
 use crate::models::{traits::*, Accessible};
 use crate::schema::accessibles;

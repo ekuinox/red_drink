@@ -3,7 +3,7 @@ use diesel::prelude::*;
 use diesel::associations::HasTable;
 use diesel::result::Error as DieselError;
 use crate::db::DBConnection;
-use crate::models::{traits::*, Accessible, Permission, Role};
+use crate::models::{traits::*, Accessible, Permission};
 use crate::schema::accessibles;
 
 impl Find<Accessible, (i32, String, String)> for Accessible {

@@ -2,7 +2,6 @@ use std::collections::HashSet;
 use diesel;
 use diesel::prelude::*;
 use crate::db::DBConnection;
-use crate::models::traits::*;
 use crate::models::users_roles::*;
 use crate::models::role::Role;
 use crate::models::permission::Permission;
@@ -53,6 +52,7 @@ fn test_has_permission() {
     use crate::db::connect;
     let conn = connect().get().expect("cannnot get connection");
     conn.test_transaction::<_, diesel::result::Error, _>(|| {
+        use crate::models::traits::Create;
         use crate::models::user::UserInsertable;
         use crate::models::role::RoleInsertable;
         use crate::models::Accessible;
