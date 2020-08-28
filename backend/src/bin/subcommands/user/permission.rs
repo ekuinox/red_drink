@@ -13,6 +13,7 @@ impl HuaSubCommand for PermissionCommand {
         SubCommand::with_name(PERMISSION_COMMAND_NAME)
             .about("view user's permission")
             .arg(Arg::from_usage("user -u --user [User ID]").required(true))
+            .arg(Arg::from_usage("resource -r --resource [Resource ID]"))
             .arg(Arg::from_usage("has -h --has [Permission Path] 'Checks user has specific permission'").multiple(true))
             .arg(Arg::from_usage("all -a --all").conflicts_with("has")
         )
@@ -20,10 +21,11 @@ impl HuaSubCommand for PermissionCommand {
     fn run(matches: &ArgMatches) -> String {
         // 上でrequiredかけてるからunwrapしちゃう
         let id = matches.value_of("user").and_then(|id| id.parse::<i32>().ok()).unwrap();
+        let resource_id = matches.value_of("resource").map(|str| str.to_string());
         with_connection(|conn| {
             if let Some(user) = User::find(id, conn) {
                 if matches.is_present("all") {
-                    user.get_permissions(conn)
+                    user.get_permissions(resource_id.clone(), conn)
                         .unwrap_or_default()
                         .into_iter()
                         .map(|permission| format!("{}\n", permission.path))
@@ -31,7 +33,7 @@ impl HuaSubCommand for PermissionCommand {
                 } else {
                     matches.values_of("has").map(
                         |values| values.into_iter().map(
-                            |path| format!("{}: {}\n", path, user.has_permission(path.to_string(), conn))
+                            |path| format!("{}: {}\n", path, user.has_permission(path.to_string(), resource_id.clone(), conn))
                         ).collect::<String>()
                     ).unwrap_or("".to_string())
                 }
