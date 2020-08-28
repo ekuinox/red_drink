@@ -14,7 +14,7 @@ impl Find<Accessible, (i32, String, String)> for Accessible {
 
 impl Accessible {
     /// roleが持つ指定したリソースに対しての権限を取得する
-    fn get_permissions(role_id: i32, resource_id: String, conn: &DBConnection) -> Result<Vec<Permission>, DieselError> {
+    pub fn get_permissions(role_id: i32, resource_id: String, conn: &DBConnection) -> Result<Vec<Permission>, DieselError> {
         Self::table()
             .inner_join(Permission::table())
             .filter(accessibles::role_id.eq(role_id))
@@ -23,7 +23,7 @@ impl Accessible {
             .map(|results| results.into_iter().unzip::<_, _, Vec<_>, Vec<Permission>>().1)
     }
     /// rootリソースに対してget_permissionsを行う
-    fn get_permissions_for_root(role_id: i32, conn: &DBConnection) -> Result<Vec<Permission>, DieselError> {
+    pub fn get_permissions_for_root(role_id: i32, conn: &DBConnection) -> Result<Vec<Permission>, DieselError> {
         Self::get_permissions(role_id, "*".to_string(), conn)
     }
 }
