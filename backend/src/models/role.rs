@@ -2,7 +2,7 @@ use diesel;
 use diesel::prelude::*;
 use crate::db::DBConnection;
 use chrono::NaiveDateTime;
-use crate::schema::{roles, accessibles, users_roles};
+use crate::schema::{roles, users_roles};
 use crate::models::traits::*;
 use crate::models::permission::Permission;
 use crate::models::Accessible;
