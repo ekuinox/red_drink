@@ -14,7 +14,7 @@ impl HuaSubCommand for AllCommand {
     fn run(_: &ArgMatches) -> String {
         use red_drink::models::role::Role;
         with_connection(|conn| {
-            if let Some(roles) = Role::all(&conn) {
+            if let Ok(roles) = Role::all(&conn) {
                 roles.into_iter().fold(vec![], |mut accumurator, role| {
                     let mut about = "----------\n".to_string();
                     about = about + &format!("id:\t{}\n", role.id);
