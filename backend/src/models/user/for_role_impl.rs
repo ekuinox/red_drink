@@ -18,7 +18,7 @@ impl User {
 
     /// ユーザの持つRoleを取得する
     pub fn get_roles(&self, connection: &DBConnection) -> Option<Vec<Role>> {
-        UsersRole::belonging_to(self).get_results::<UsersRole>(connection).map(|users_roles| {
+        Assignment::belonging_to(self).get_results::<Assignment>(connection).map(|users_roles| {
             users_roles.iter().flat_map(|users_role| {
                 Role::find(users_role.role_id, connection)
             }).collect::<Vec<Role>>()

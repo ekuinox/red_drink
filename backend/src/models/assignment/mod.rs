@@ -14,7 +14,7 @@ use crate::models::role::Role;
 #[belongs_to(User, foreign_key = "user_id")]
 #[belongs_to(Role, foreign_key = "role_id")]
 #[primary_key(user_id, role_id)]
-pub struct UsersRole {
+pub struct Assignment {
     pub user_id: i32,
     pub role_id: i32,
     pub created_at: NaiveDateTime
