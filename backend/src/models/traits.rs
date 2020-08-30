@@ -16,6 +16,6 @@ pub trait Save<T> {
 }
 
 /// find model
-pub trait Find<T, Id> {
-    fn find(id: Id, conn: &DBConnection) -> Option<T>;
+pub trait Find<T, E, Id> {
+    fn find(id: Id, conn: &DBConnection) -> Result<T, E>;
 }

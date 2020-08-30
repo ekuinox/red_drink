@@ -5,6 +5,7 @@ use diesel::prelude::*;
 use diesel::associations::HasTable;
 use crate::db::DBConnection;
 use crate::models::{traits::*, Resource};
+use crate::types::DieselError;
 
 impl New<Resource, (String, String, String, NaiveDateTime)> for Resource {
     fn new((id, name, description, created_at): (String, String, String, NaiveDateTime)) -> Resource {
@@ -38,9 +39,9 @@ impl Save<Resource> for Resource {
     }
 }
 
-impl Find<Resource, String> for Resource {
-    fn find(id: String, conn: &DBConnection) -> Option<Resource> {
-        Self::table().find(id).first::<Resource>(conn).ok()
+impl Find<Resource, DieselError, String> for Resource {
+    fn find(id: String, conn: &DBConnection) -> Result<Resource, DieselError> {
+        Self::table().find(id).first::<Resource>(conn)
     }
 }
 
