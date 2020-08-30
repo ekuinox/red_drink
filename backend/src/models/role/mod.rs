@@ -7,6 +7,8 @@ use crate::models::traits::*;
 use crate::models::permission::Permission;
 use crate::models::Accessible;
 
+mod create_impl;
+
 #[table_name = "roles"]
 #[derive(Identifiable, AsChangeset, Serialize, Deserialize, Insertable, Queryable, PartialEq, Debug)]
 #[primary_key(id)]
@@ -74,32 +76,5 @@ impl Role {
     // get all roles
     pub fn all(connection: &DBConnection) -> Option<Vec<Role>> {
         roles::table.load::<Role>(connection).ok()
-    }
-}
-
-#[table_name = "roles"]
-#[derive(AsChangeset, Serialize, Deserialize, Insertable, Queryable, PartialEq, Debug, Clone)]
-#[primary_key(id)]
-pub struct RoleInsertable {
-    pub name: String
-}
-
-impl RoleInsertable {
-    pub fn new(name: String) -> RoleInsertable {
-        RoleInsertable { name }
-    }
-    
-    /**
-     * Roleを新規作成する
-     */
-    pub fn create(&self, connection: &DBConnection) -> Option<Role> {
-        diesel::insert_into(roles::table)
-            .values((*self).clone())
-            .returning(roles::id)
-            .get_result(connection)
-            .ok()
-            .and_then(|id| {
-                Role::find(id, connection)
-            })
     }
 }
