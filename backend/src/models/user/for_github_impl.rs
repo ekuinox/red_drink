@@ -6,6 +6,7 @@ use crate::schema::github_accounts;
 use crate::models::github_account::*;
 use crate::models::user::User;
 use crate::models::user::UserInsertable;
+use crate::models::traits::*;
 
 /// GitHubアカウントとの紐付けの実装
 impl User {
@@ -28,7 +29,7 @@ impl User {
 
     /// GitHubIdから検索する
     pub fn find_by_github_id(github_id: i32, connection: &DBConnection) -> Option<User> {
-        GitHubAccount::find(github_id, connection).and_then(|user: GitHubAccount| {
+        GitHubAccount::find(github_id, connection).ok().and_then(|user: GitHubAccount| {
             user.to_user(connection)
         })
     }

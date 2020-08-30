@@ -6,6 +6,7 @@ use crate::schema::github_accounts;
 use crate::models::user::User;
 
 mod create_impl;
+mod github_account_impl;
 
 /**
  * GitHubアカウントとUserを紐付ける
@@ -42,21 +43,5 @@ impl GitHubUserInsertable {
      */
     pub fn create(self, connection: &DBConnection) -> bool {
         diesel::insert_into(github_accounts::table).values(self).execute(connection).is_ok()
-    }
-}
-
-impl GitHubAccount {
-    /**
-     * GitHubのユーザIDから取得する
-     */
-    pub fn find(github_id: i32, connection: &DBConnection) -> Option<GitHubAccount> {
-        github_accounts::table.find(github_id).get_result::<GitHubAccount>(connection).ok()
-    }
-
-    /**
-     * Userに変換する
-     */
-    pub fn to_user(self, connection: &DBConnection) -> Option<User> {
-        User::find(self.user_id, connection)
     }
 }
