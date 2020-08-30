@@ -6,6 +6,8 @@ use crate::schema::assignments;
 use crate::models::user::*;
 use crate::models::role::Role;
 
+mod create_impl;
+
 /**
  * Userの所持権限
  */
