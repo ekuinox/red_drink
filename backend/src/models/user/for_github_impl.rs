@@ -24,7 +24,7 @@ impl User {
 
     /// GitHubアカウントと紐付ける
     pub fn associate_to_github(self, github_user_id: i32, connection: &DBConnection) -> (User, bool) {
-        (self, GitHubUserInsertable::new(self.id, github_user_id).create(connection))
+        (self, GitHubAccount::create((self.id, github_user_id), connection).is_ok())
     }
 
     /// GitHubIdから検索する
