@@ -1,10 +1,6 @@
-use diesel;
-use diesel::prelude::*;
-use crate::db::DBConnection;
 use chrono::{NaiveDateTime};
 use crate::schema::assignments;
-use crate::models::user::*;
-use crate::models::role::Role;
+use crate::models::{User, Role};
 
 mod create_impl;
 
@@ -22,26 +18,3 @@ pub struct Assignment {
     pub created_at: NaiveDateTime
 }
 
-/**
- * 権限追加用
- */
-#[table_name = "assignments"]
-#[derive(Insertable, Debug)]
-pub struct UsersRoleInsertable {
-    pub user_id: i32,
-    pub role_id: i32
-}
-
-impl UsersRoleInsertable {
-    pub fn new(user_id: i32, role_id: i32) -> UsersRoleInsertable {
-        UsersRoleInsertable { user_id: user_id, role_id: role_id }
-    }
-    /**
-     * 新規追加
-     */
-    pub fn create(self, connection: &DBConnection) -> bool {
-        connection.transaction(|| {
-            diesel::insert_into(assignments::table).values(self).execute(connection)
-        }).is_ok()
-    }
-}

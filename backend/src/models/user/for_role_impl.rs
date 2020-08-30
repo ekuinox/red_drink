@@ -2,18 +2,14 @@ use std::collections::HashSet;
 use diesel;
 use diesel::prelude::*;
 use crate::db::DBConnection;
-use crate::models::assignment::*;
-use crate::models::role::Role;
-use crate::models::permission::Permission;
-use crate::models::permission::HasPermission;
-use crate::models::user::User;
+use crate::models::{Assignment, User, Role, Permission, HasPermission, traits::*};
 
 /// Userに対してのRole周辺の実装
 impl User {
     
     /// ユーザにRoleを付与する
     pub fn add_role(&self, role_id: i32, connection: &DBConnection) -> bool {
-        UsersRoleInsertable::new(self.id, role_id).create(connection)
+        Assignment::create((self.id, role_id), connection).is_ok()
     }
 
     /// ユーザの持つRoleを取得する
