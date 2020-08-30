@@ -28,7 +28,7 @@ impl User {
 
     /// GitHubIdから検索する
     pub fn find_by_github_id(github_id: i32, connection: &DBConnection) -> Option<User> {
-        GitHubUser::find(github_id, connection).and_then(|user: GitHubUser| {
+        GitHubAccount::find(github_id, connection).and_then(|user: GitHubAccount| {
             user.to_user(connection)
         })
     }
@@ -42,8 +42,8 @@ impl User {
     }
 
     /// get all users with github
-    pub fn all_with_github(connection: &DBConnection) -> Option<Vec<(User, Option<GitHubUser>)>> {
-        users::table.left_join(github_accounts::table).load::<(User, Option<GitHubUser>)>(connection).ok()
+    pub fn all_with_github(connection: &DBConnection) -> Option<Vec<(User, Option<GitHubAccount>)>> {
+        users::table.left_join(github_accounts::table).load::<(User, Option<GitHubAccount>)>(connection).ok()
     }
 }
 
@@ -60,7 +60,7 @@ fn test_create_with_github_id() {
         assert_ne!(user, None);
         // 指定したGitHubのIdでアカウントを作成できているか確認する
         assert_eq!(
-            github_accounts::table.filter(github_accounts::user_id.eq(user.unwrap().id)).get_result::<GitHubUser>(&connection).ok().map(|user| { user.github_id }),
+            github_accounts::table.filter(github_accounts::user_id.eq(user.unwrap().id)).get_result::<GitHubAccount>(&connection).ok().map(|user| { user.github_id }),
             Some(github_id)
         );
         // GitHub ID の uniqueを確認する -> 同じIDで作成すると失敗する

@@ -5,6 +5,8 @@ use chrono::{NaiveDateTime};
 use crate::schema::github_accounts;
 use crate::models::user::User;
 
+mod create_impl;
+
 /**
  * GitHubアカウントとUserを紐付ける
  */
@@ -12,7 +14,7 @@ use crate::models::user::User;
 #[derive(AsChangeset, Serialize, Deserialize, Insertable, Queryable, Associations, PartialEq, Debug)]
 #[belongs_to(User, foreign_key = "user_id")]
 #[primary_key(github_id)]
-pub struct GitHubUser {
+pub struct GitHubAccount {
     pub github_id: i32,
     pub user_id: i32,
     pub created_at: NaiveDateTime
@@ -43,12 +45,12 @@ impl GitHubUserInsertable {
     }
 }
 
-impl GitHubUser {
+impl GitHubAccount {
     /**
      * GitHubのユーザIDから取得する
      */
-    pub fn find(github_id: i32, connection: &DBConnection) -> Option<GitHubUser> {
-        github_accounts::table.find(github_id).get_result::<GitHubUser>(connection).ok()
+    pub fn find(github_id: i32, connection: &DBConnection) -> Option<GitHubAccount> {
+        github_accounts::table.find(github_id).get_result::<GitHubAccount>(connection).ok()
     }
 
     /**
