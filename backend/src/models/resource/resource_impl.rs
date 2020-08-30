@@ -62,7 +62,7 @@ fn test_resource_impls() {
         // created_atの比較は行わない
         assert_eq!(
             Resource::find("red_drink_main_server".to_string(), &conn).map(|resource| (resource.id, resource.name, resource.description)),
-            Some((resource.id, resource.name, resource.description))
+            Ok((resource.id, resource.name, resource.description))
         );
         Ok(())
     });   
