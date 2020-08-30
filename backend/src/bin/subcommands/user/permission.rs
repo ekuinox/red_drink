@@ -1,5 +1,5 @@
 use clap::{App, SubCommand, Arg, ArgMatches};
-use red_drink::models::user::User;
+use red_drink::models::{User, traits::*};
 use crate::with_connection;
 use crate::subcommands::HuaSubCommand;
 

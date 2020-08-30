@@ -26,7 +26,7 @@ impl HuaSubCommand for AddRoleCommand {
             )
     }
     fn run(matches: &ArgMatches) -> String {
-        use red_drink::models::user::User;
+        use red_drink::models::{User, traits::*};
         if let (Some(user_id), Some(role_ids)) = (
             matches.value_of("user").and_then(|id| id.parse::<i32>().ok()) ,
             matches.values_of("role").map(|v| v.flat_map(|id| id.parse::<i32>().ok()).collect::<Vec<i32>>())
