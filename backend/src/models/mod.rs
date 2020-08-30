@@ -13,4 +13,5 @@ pub use resource::*;
 pub use github_account::*;
 pub use permission::*;
 pub use role::*;
+pub use user::*;
 pub use assignment::*;
