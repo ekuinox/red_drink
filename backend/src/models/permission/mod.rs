@@ -4,9 +4,10 @@ use crate::db::DBConnection;
 use chrono::NaiveDateTime;
 use crate::schema::{permissions};
 
+mod create_impl;
+
 #[table_name = "permissions"]
 #[derive(AsChangeset, Serialize, Deserialize, Identifiable, Insertable, Queryable, PartialEq, Eq, Hash, Clone, Debug)]
-#[primary_key(path)]
 #[primary_key(path)]
 pub struct Permission {
     pub path: String,
@@ -82,26 +83,4 @@ impl HasPermission<&Vec<Permission>, String> for Permission {
 fn test_has_permission() {
     assert!(Permission::has_permission(&vec!["foo.*".to_string()], &"foo.bar".to_string()));
     assert!(!Permission::has_permission(&vec!["foo.*".to_string()], &"xxx.yyy".to_string()));
-}
-
-#[table_name = "permissions"]
-#[derive(AsChangeset, Serialize, Deserialize, Insertable, Queryable, PartialEq, Debug, Clone)]
-#[primary_key(path)]
-pub struct PermissionInsertable {
-    path: String,
-    name: String,
-    description: Option<String>
-}
-
-impl PermissionInsertable {
-    pub fn new(path: String, name: String, description: Option<String>) -> PermissionInsertable {
-        PermissionInsertable {
-            path, name, description
-        }
-    }
-    
-    pub fn create(&self, connection: &DBConnection) -> Option<Permission> {
-        let _ = diesel::insert_into(permissions::table).values((*self).clone()).execute(connection);
-        Permission::find(self.path.clone(), connection)
-    }
 }

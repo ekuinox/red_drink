@@ -57,9 +57,8 @@ fn test_has_permission() {
         }
         let paths = vec!["foo.bar".to_string(), "xxx.*".to_string()];
         paths.into_iter().for_each(|path| {
-            use crate::models::permission::{Permission, PermissionInsertable};
-            let Permission { path, .. } = PermissionInsertable::new(path.clone(), path.clone(), None)
-                .create(&conn).expect("cannot create role");
+            use crate::models::permission::{Permission};
+            let Permission { path, .. } = Permission::create((path.clone(), path.clone()), &conn).expect("cannot create role");
             // リソースは指定せず行う
             assert!(Accessible::create((role.id, path), &conn).is_ok());
         });
