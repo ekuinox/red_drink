@@ -16,8 +16,8 @@ struct UserBuilder {
 }
 
 impl UserBuilder {
-    fn new() -> UserBuilder {
-        UserBuilder { id: None }
+    fn new(id: Option<i32>) -> UserBuilder {
+        UserBuilder { id }
     }
     fn save(self, conn: &DBConnection) -> Result<User, DieselError> {
         diesel::insert_into(Self::table())
@@ -30,6 +30,12 @@ impl UserBuilder {
 
 impl Create<User, DieselError, ()> for User {
     fn create(_: (), conn: &DBConnection) -> Result<User, DieselError> {
-        UserBuilder::new().save(conn)
+        UserBuilder::new(None).save(conn)
+    }
+}
+
+impl Create<User, DieselError, i32> for User {
+    fn create(id: i32, conn: &DBConnection) -> Result<User, DieselError> {
+        UserBuilder::new(Some(id)).save(conn)
     }
 }
