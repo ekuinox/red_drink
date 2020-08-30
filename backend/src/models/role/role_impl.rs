@@ -25,11 +25,11 @@ impl Role {
     /**
      * Roleに紐づくPermissionを取得する
      */
-    pub fn get_permissions(&self, resource_id: Option<String>, conn: &DBConnection) -> Option<Vec<Permission>> {
+    pub fn get_permissions(&self, resource_id: Option<String>, conn: &DBConnection) -> Result<Vec<Permission>, DieselError> {
         match resource_id {
             Some(id) => Accessible::get_permissions(self.id, id, conn),
             None => Accessible::get_permissions_for_root(self.id, conn)
-        }.ok()
+        }
     }
 
     /**
@@ -44,7 +44,7 @@ impl Role {
     }
 
     // get all roles
-    pub fn all(connection: &DBConnection) -> Option<Vec<Role>> {
-        roles::table.load::<Role>(connection).ok()
+    pub fn all(connection: &DBConnection) -> Result<Vec<Role>, DieselError> {
+        roles::table.load::<Role>(connection)
     }
 }
