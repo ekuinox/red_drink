@@ -2,14 +2,14 @@ use diesel;
 use diesel::prelude::*;
 use crate::db::DBConnection;
 use chrono::{NaiveDateTime};
-use crate::schema::users_roles;
+use crate::schema::assignments;
 use crate::models::user::*;
 use crate::models::role::Role;
 
 /**
  * Userの所持権限
  */
-#[table_name = "users_roles"]
+#[table_name = "assignments"]
 #[derive(Identifiable, AsChangeset, Serialize, Deserialize, Insertable, Queryable, Associations, PartialEq, Debug)]
 #[belongs_to(User, foreign_key = "user_id")]
 #[belongs_to(Role, foreign_key = "role_id")]
@@ -23,7 +23,7 @@ pub struct UsersRole {
 /**
  * 権限追加用
  */
-#[table_name = "users_roles"]
+#[table_name = "assignments"]
 #[derive(Insertable, Debug)]
 pub struct UsersRoleInsertable {
     pub user_id: i32,
@@ -39,7 +39,7 @@ impl UsersRoleInsertable {
      */
     pub fn create(self, connection: &DBConnection) -> bool {
         connection.transaction(|| {
-            diesel::insert_into(users_roles::table).values(self).execute(connection)
+            diesel::insert_into(assignments::table).values(self).execute(connection)
         }).is_ok()
     }
 }

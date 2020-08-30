@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use diesel;
 use diesel::prelude::*;
 use crate::db::DBConnection;
-use crate::models::users_role::*;
+use crate::models::assignment::*;
 use crate::models::role::Role;
 use crate::models::permission::Permission;
 use crate::models::permission::HasPermission;

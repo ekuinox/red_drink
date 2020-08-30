@@ -2,8 +2,8 @@ use diesel;
 use diesel::prelude::*;
 use crate::db::DBConnection;
 use crate::schema::users;
-use crate::schema::github_users;
-use crate::models::github_user::*;
+use crate::schema::github_accounts;
+use crate::models::github_account::*;
 use crate::models::user::User;
 use crate::models::user::UserInsertable;
 
@@ -43,13 +43,13 @@ impl User {
 
     /// get all users with github
     pub fn all_with_github(connection: &DBConnection) -> Option<Vec<(User, Option<GitHubUser>)>> {
-        users::table.left_join(github_users::table).load::<(User, Option<GitHubUser>)>(connection).ok()
+        users::table.left_join(github_accounts::table).load::<(User, Option<GitHubUser>)>(connection).ok()
     }
 }
 
 #[test]
 fn test_create_with_github_id() {
-    use crate::schema::github_users;
+    use crate::schema::github_accounts;
     use crate::db::connect;
 
     let github_id = 1;
@@ -60,7 +60,7 @@ fn test_create_with_github_id() {
         assert_ne!(user, None);
         // 指定したGitHubのIdでアカウントを作成できているか確認する
         assert_eq!(
-            github_users::table.filter(github_users::user_id.eq(user.unwrap().id)).get_result::<GitHubUser>(&connection).ok().map(|user| { user.github_id }),
+            github_accounts::table.filter(github_accounts::user_id.eq(user.unwrap().id)).get_result::<GitHubUser>(&connection).ok().map(|user| { user.github_id }),
             Some(github_id)
         );
         // GitHub ID の uniqueを確認する -> 同じIDで作成すると失敗する
