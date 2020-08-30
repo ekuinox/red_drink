@@ -15,7 +15,7 @@ impl GitHubAccount {
     /**
      * Userに変換する
      */
-    pub fn to_user(self, connection: &DBConnection) -> Option<User> {
+    pub fn to_user(self, connection: &DBConnection) -> Result<User, DieselError> {
         User::find(self.user_id, connection)
     }
 }

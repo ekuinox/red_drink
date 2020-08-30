@@ -51,7 +51,7 @@ pub fn authorize(code: String, session: Session, connection: Connection) -> Redi
             data.dot_set(GITHUB_ACCESS_TOKEN_PATH, token)
         });
         // アカウントが存在するか確認し、存在しなければ作成する
-        let _user: Option<User> = User::find_by_github_id(user.id as i32, &connection);
+        let _ = User::find_by_github_id(user.id as i32, &connection);
     }
     
     Redirect::to(format!("/"))

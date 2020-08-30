@@ -47,7 +47,7 @@ pub fn get_token(session: Session, connection: Connection) -> Json<Option<GetTok
                             display_name: authenticated_user_response.name,
                             id: authenticated_user_response.id
                         }
-                    })
+                    }).ok()
                 })
             }).ok().flatten()
     }).flatten())

@@ -49,10 +49,9 @@ fn test_has_permission() {
     let conn = connect().get().expect("cannnot get connection");
     conn.test_transaction::<_, diesel::result::Error, _>(|| {
         use crate::models::traits::Create;
-        use crate::models::user::UserInsertable;
         use crate::models::role::RoleInsertable;
         use crate::models::Accessible;
-        let user = User::create(UserInsertable::new(), &conn).expect("cannot create user");
+        let user = User::create((), &conn).expect("cannot create user");
         let role = RoleInsertable::new("test_role".to_string()).create(&conn).expect("cannot create role");
         if !user.add_role(role.id, &conn) {
             panic!("cannot attach role to user");

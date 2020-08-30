@@ -23,7 +23,7 @@ impl HuaSubCommand for PermissionCommand {
         let id = matches.value_of("user").and_then(|id| id.parse::<i32>().ok()).unwrap();
         let resource_id = matches.value_of("resource").map(|str| str.to_string());
         with_connection(|conn| {
-            if let Some(user) = User::find(id, conn) {
+            if let Ok(user) = User::find(id, conn) {
                 if matches.is_present("all") {
                     user.get_permissions(resource_id.clone(), conn)
                         .unwrap_or_default()
