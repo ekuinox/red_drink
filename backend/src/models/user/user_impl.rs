@@ -14,7 +14,7 @@ impl Find<User, DieselError, i32> for User {
 /// ユーザの操作
 impl User {
     /// get all users
-    pub fn all(connection: &DBConnection) -> Option<Vec<User>> {
-        users::table.load::<User>(connection).ok()
+    pub fn all(connection: &DBConnection) -> Result<Vec<User>, DieselError> {
+        users::table.load::<User>(connection)
     }
 }
