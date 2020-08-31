@@ -42,8 +42,8 @@ impl User {
     }
 
     /// get all users with github
-    pub fn all_with_github(connection: &DBConnection) -> Option<Vec<(User, Option<GitHubAccount>)>> {
-        users::table.left_join(github_accounts::table).load::<(User, Option<GitHubAccount>)>(connection).ok()
+    pub fn all_with_github(connection: &DBConnection) -> Result<Vec<(User, Option<GitHubAccount>)>, DieselError> {
+        users::table.left_join(github_accounts::table).load::<(User, Option<GitHubAccount>)>(connection)
     }
 }
 

@@ -14,7 +14,7 @@ impl HuaSubCommand for AllCommand {
     fn run(_: &ArgMatches) -> String {
         use red_drink::models::User;
         with_connection(|conn| {
-            if let Some(users) = User::all_with_github(conn) {
+            if let Ok(users) = User::all_with_github(conn) {
                 users.into_iter().fold(vec![], |mut accumurator, (user, github_user_opt)| {
                     // create user's detail string
                     let mut about = "----------\n".to_string();
