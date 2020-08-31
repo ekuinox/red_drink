@@ -2,6 +2,7 @@ use std::collections::HashSet;
 use diesel;
 use diesel::prelude::*;
 use crate::db::DBConnection;
+use crate::types::DieselError;
 use crate::models::{Assignment, User, Role, Permission, HasPermission, traits::*};
 
 /// Userに対してのRole周辺の実装
@@ -13,16 +14,16 @@ impl User {
     }
 
     /// ユーザの持つRoleを取得する
-    pub fn get_roles(&self, connection: &DBConnection) -> Option<Vec<Role>> {
+    pub fn get_roles(&self, connection: &DBConnection) -> Result<Vec<Role>, DieselError> {
         Assignment::belonging_to(self).get_results::<Assignment>(connection).map(|users_roles| {
             users_roles.iter().flat_map(|users_role| {
                 Role::find(users_role.role_id, connection)
             }).collect::<Vec<Role>>()
-        }).ok()
+        })
     }
 
     /// Userが持つPermissionを取得する
-    pub fn get_permissions(&self, resource_id: Option<String>, connection: &DBConnection) -> Option<Vec<Permission>> {
+    pub fn get_permissions(&self, resource_id: Option<String>, connection: &DBConnection) -> Result<Vec<Permission>, DieselError> {
         self.get_roles(connection).map(
             |roles| roles.into_iter().flat_map(
                 |role| role.get_permissions(resource_id.clone(), connection)
