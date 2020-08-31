@@ -14,8 +14,7 @@ fn get_parent_paths(path: &String) -> Vec<String> {
         let last = accumrator.last().unwrap().clone().to_string();
         let last_splited: Vec<&str> = last.split(".").collect();
         // [*] || ["foo.*"]
-        let mut last_splited = last_splited.iter().map
-        (|str| str.to_string()).collect::<Vec<String>>();
+        let mut last_splited = last_splited.iter().map(|str| str.to_string()).collect::<Vec<String>>();
         // [*, "foo.*"] || [*, "foo.*", "foo.bar.*"]
         last_splited.insert(last_splited.len() - 1, String::from(current));
         [&accumrator[..], &vec![last_splited.join(".")][..]].concat()
