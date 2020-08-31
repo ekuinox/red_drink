@@ -6,5 +6,6 @@ extern crate serde_json;
 
 pub mod db;
 pub mod models;
+pub mod results;
 pub mod types;
 mod schema;
