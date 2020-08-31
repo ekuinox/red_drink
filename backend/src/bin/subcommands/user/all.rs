@@ -12,7 +12,7 @@ impl HuaSubCommand for AllCommand {
         SubCommand::with_name(ALL_COMMAND_NAME).about("show all users")
     }
     fn run(_: &ArgMatches) -> String {
-        use red_drink::models::user::User;
+        use red_drink::models::User;
         with_connection(|conn| {
             if let Some(users) = User::all_with_github(conn) {
                 users.into_iter().fold(vec![], |mut accumurator, (user, github_user_opt)| {

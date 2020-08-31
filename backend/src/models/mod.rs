@@ -1,10 +1,10 @@
 mod accessible;
+mod assignment;
+mod github_account;
+mod permission;
 mod resource;
-pub mod github_account;
-pub mod user;
-pub mod role;
-pub mod permission;
-pub mod assignment;
+mod role;
+mod user;
 pub mod traits;
 
 // re-exports

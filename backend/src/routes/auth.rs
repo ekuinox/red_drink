@@ -5,7 +5,7 @@ use json_dotpath::DotPaths;
 use crate::github::*;
 use crate::types::Session;
 use crate::db::Connection;
-use crate::models::user::User;
+use crate::models::User;
 
 const PKCE_VERIFIER_PATH: &'static str = "PKCE_VERIFIER";
 pub const GITHUB_ACCESS_TOKEN_PATH: &'static str = "GITHUB_ACCESS_TOKEN";

@@ -19,7 +19,7 @@ impl HuaSubCommand for CreateCommand {
         )
     }
     fn run(matches: &ArgMatches) -> String {
-        use red_drink::models::user::User;
+        use red_drink::models::User;
         if let Some(github_user_id)  = matches.value_of("github-id").and_then(|id| id.parse::<i32>().ok()) {
             format!("{}", with_connection(|conn| {
                 if let Ok(user) = User::create_with_github_id(github_user_id, conn) {

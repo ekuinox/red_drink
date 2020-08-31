@@ -12,7 +12,7 @@ impl HuaSubCommand for AllCommand {
         SubCommand::with_name(ALL_COMMAND_NAME).about("show all roles")
     }
     fn run(_: &ArgMatches) -> String {
-        use red_drink::models::role::Role;
+        use red_drink::models::Role;
         with_connection(|conn| {
             if let Ok(roles) = Role::all(&conn) {
                 roles.into_iter().fold(vec![], |mut accumurator, role| {
