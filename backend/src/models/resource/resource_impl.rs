@@ -25,7 +25,6 @@ fn test_resource_impls() {
     let conn = connect().get().expect("need connection");
     conn.test_transaction::<_, diesel::result::Error, _>(|| {
         let resource = Resource::create("red_drink_main_server".to_string(), &conn).expect("could not create resource");
-        println!("{:?}", resource);
         assert_eq!(
             Resource::find(resource.id.clone(), &conn).map(|resource| (resource.id, resource.name, resource.description)),
             Ok((resource.id, resource.name, resource.description))
