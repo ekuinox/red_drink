@@ -1,8 +1,8 @@
 use chrono::NaiveDateTime;
 use crate::schema::resources;
 
-mod resource_impl;
 mod create_impl;
+mod resource_impl;
 
 #[table_name = "resources"]
 #[derive(Serialize, Deserialize, AsChangeset, Insertable, Identifiable, Associations, Queryable, PartialEq, Clone, Debug)]

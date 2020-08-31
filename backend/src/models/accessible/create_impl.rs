@@ -59,8 +59,8 @@ fn test_create_accessible() {
     let conn = connect().get().expect("could not connect db");
     conn.test_transaction::<_, diesel::result::Error, _>(|| {
         use crate::models::*;
-        let permission: Permission = PermissionInsertable::new("foo.*".to_string(), "foo root".to_string(), None).create(&conn).expect("could not create permission");
-        let role: Role = RoleInsertable::new("foo role".to_string()).create(&conn).expect("could not create role");
+        let permission: Permission = Permission::create(("foo.*".to_string(), "foo root".to_string()), &conn).expect("could not create permission");
+        let role: Role = Role::create("foo role".to_string(), &conn).expect("could not create role");
 
         // root
         let accessible = Accessible::create((role.id, permission.path.clone()), &conn)?;

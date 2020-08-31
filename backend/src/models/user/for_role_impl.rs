@@ -2,31 +2,28 @@ use std::collections::HashSet;
 use diesel;
 use diesel::prelude::*;
 use crate::db::DBConnection;
-use crate::models::users_roles::*;
-use crate::models::role::Role;
-use crate::models::permission::Permission;
-use crate::models::permission::HasPermission;
-use crate::models::user::User;
+use crate::types::DieselError;
+use crate::models::{Assignment, User, Role, Permission, HasPermission, traits::*};
 
 /// Userに対してのRole周辺の実装
 impl User {
     
     /// ユーザにRoleを付与する
     pub fn add_role(&self, role_id: i32, connection: &DBConnection) -> bool {
-        UsersRoleInsertable::new(self.id, role_id).create(connection)
+        Assignment::create((self.id, role_id), connection).is_ok()
     }
 
     /// ユーザの持つRoleを取得する
-    pub fn get_roles(&self, connection: &DBConnection) -> Option<Vec<Role>> {
-        UsersRole::belonging_to(self).get_results::<UsersRole>(connection).map(|users_roles| {
+    pub fn get_roles(&self, connection: &DBConnection) -> Result<Vec<Role>, DieselError> {
+        Assignment::belonging_to(self).get_results::<Assignment>(connection).map(|users_roles| {
             users_roles.iter().flat_map(|users_role| {
                 Role::find(users_role.role_id, connection)
             }).collect::<Vec<Role>>()
-        }).ok()
+        })
     }
 
     /// Userが持つPermissionを取得する
-    pub fn get_permissions(&self, resource_id: Option<String>, connection: &DBConnection) -> Option<Vec<Permission>> {
+    pub fn get_permissions(&self, resource_id: Option<String>, connection: &DBConnection) -> Result<Vec<Permission>, DieselError> {
         self.get_roles(connection).map(
             |roles| roles.into_iter().flat_map(
                 |role| role.get_permissions(resource_id.clone(), connection)
@@ -52,20 +49,17 @@ fn test_has_permission() {
     use crate::db::connect;
     let conn = connect().get().expect("cannnot get connection");
     conn.test_transaction::<_, diesel::result::Error, _>(|| {
-        use crate::models::traits::Create;
-        use crate::models::user::UserInsertable;
-        use crate::models::role::RoleInsertable;
+        use crate::models::traits::*;
         use crate::models::Accessible;
-        let user = User::create(UserInsertable::new(), &conn).expect("cannot create user");
-        let role = RoleInsertable::new("test_role".to_string()).create(&conn).expect("cannot create role");
+        let user = User::create((), &conn).expect("cannot create user");
+        let role = Role::create("test_role".to_string(), &conn).expect("cannot create role");
         if !user.add_role(role.id, &conn) {
             panic!("cannot attach role to user");
         }
         let paths = vec!["foo.bar".to_string(), "xxx.*".to_string()];
         paths.into_iter().for_each(|path| {
-            use crate::models::permission::{Permission, PermissionInsertable};
-            let Permission { path, .. } = PermissionInsertable::new(path.clone(), path.clone(), None)
-                .create(&conn).expect("cannot create role");
+            use crate::models::permission::{Permission};
+            let Permission { path, .. } = Permission::create((path.clone(), path.clone()), &conn).expect("cannot create role");
             // リソースは指定せず行う
             assert!(Accessible::create((role.id, path), &conn).is_ok());
         });

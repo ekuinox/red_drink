@@ -1,10 +1,5 @@
 use crate::db::DBConnection;
 
-/// create model without save to db
-pub trait New<T, Args> {
-    fn new(args: Args) -> T;
-}
-
 /// create model with save to db
 pub trait Create<T, E, Args> {
     fn create(args: Args, conn:  &DBConnection) -> Result<T, E>;
@@ -16,6 +11,6 @@ pub trait Save<T> {
 }
 
 /// find model
-pub trait Find<T, Id> {
-    fn find(id: Id, conn: &DBConnection) -> Option<T>;
+pub trait Find<T, E, Id> {
+    fn find(id: Id, conn: &DBConnection) -> Result<T, E>;
 }

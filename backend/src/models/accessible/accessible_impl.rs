@@ -1,14 +1,14 @@
 use diesel;
 use diesel::prelude::*;
 use diesel::associations::HasTable;
-use diesel::result::Error as DieselError;
 use crate::db::DBConnection;
 use crate::models::{traits::*, Accessible, Permission};
 use crate::schema::accessibles;
+use crate::types::DieselError;
 
-impl Find<Accessible, (i32, String, String)> for Accessible {
-    fn find(id: (i32, String, String), conn: &DBConnection) -> Option<Accessible> {
-        Self::table().find(id).first::<Accessible>(conn).ok()
+impl Find<Accessible, DieselError, (i32, String, String)> for Accessible {
+    fn find(id: (i32, String, String), conn: &DBConnection) -> Result<Accessible, DieselError> {
+        Self::table().find(id).first::<Accessible>(conn)
     }
 }
 

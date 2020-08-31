@@ -1,4 +1,4 @@
-create table users_roles (
+create table assignments (
     user_id integer not null,
     role_id integer not null,
     created_at timestamp not null default current_timestamp,

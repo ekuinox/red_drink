@@ -26,13 +26,13 @@ impl HuaSubCommand for AddRoleCommand {
             )
     }
     fn run(matches: &ArgMatches) -> String {
-        use red_drink::models::user::User;
+        use red_drink::models::{User, traits::*};
         if let (Some(user_id), Some(role_ids)) = (
             matches.value_of("user").and_then(|id| id.parse::<i32>().ok()) ,
             matches.values_of("role").map(|v| v.flat_map(|id| id.parse::<i32>().ok()).collect::<Vec<i32>>())
         ) {
             format!("{}", with_connection(|conn| {
-                if let Some(user) = User::find(user_id, &conn) {
+                if let Ok(user) = User::find(user_id, &conn) {
                     let results = role_ids.into_iter().map(|role_id| (user.add_role(role_id, &conn), role_id)).collect::<Vec<(bool, i32)>>();
                     let successes = results.iter().filter(|(ok, _)| *ok).map(|(_, id)| *id).collect::<Vec<i32>>();
                     let failures = results.iter().filter(|(ok, _)| !ok).map(|(_, id)| *id).collect::<Vec<i32>>();

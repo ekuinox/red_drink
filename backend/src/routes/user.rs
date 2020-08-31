@@ -4,7 +4,7 @@ use rocket_contrib::json::Json;
 use crate::types::Session;
 use crate::routes::auth::GITHUB_ACCESS_TOKEN_PATH;
 use crate::github::create_api_client;
-use crate::models::user::User;
+use crate::models::User;
 use crate::db::Connection;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -47,7 +47,7 @@ pub fn get_token(session: Session, connection: Connection) -> Json<Option<GetTok
                             display_name: authenticated_user_response.name,
                             id: authenticated_user_response.id
                         }
-                    })
+                    }).ok()
                 })
             }).ok().flatten()
     }).flatten())
