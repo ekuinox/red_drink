@@ -1,10 +1,5 @@
 use crate::db::DBConnection;
 
-/// create model without save to db
-pub trait New<T, Args> {
-    fn new(args: Args) -> T;
-}
-
 /// create model with save to db
 pub trait Create<T, E, Args> {
     fn create(args: Args, conn:  &DBConnection) -> Result<T, E>;
