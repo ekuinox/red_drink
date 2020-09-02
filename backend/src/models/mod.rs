@@ -1,4 +1,5 @@
 mod accessible;
+mod action;
 mod assignment;
 mod github_account;
 mod permission;
@@ -9,6 +10,7 @@ pub mod traits;
 
 // re-exports
 pub use accessible::*;
+pub use action::*;
 pub use resource::*;
 pub use github_account::*;
 pub use permission::*;
