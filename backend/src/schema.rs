@@ -8,6 +8,15 @@ table! {
 }
 
 table! {
+    actions (id) {
+        id -> Int4,
+        kind -> Varchar,
+        descriptor -> Json,
+        created_at -> Timestamp,
+    }
+}
+
+table! {
     assignments (user_id, role_id) {
         user_id -> Int4,
         role_id -> Int4,
@@ -65,6 +74,7 @@ joinable!(github_accounts -> users (user_id));
 
 allow_tables_to_appear_in_same_query!(
     accessibles,
+    actions,
     assignments,
     github_accounts,
     permissions,
