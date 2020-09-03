@@ -9,6 +9,6 @@ mod descriptor;
 pub struct Action {
     id: i32,
     kind: String,
-    descriptor: descriptor::RunCommand,
+    descriptor: descriptor::Descriptor,
     created_at: NaiveDateTime
 }

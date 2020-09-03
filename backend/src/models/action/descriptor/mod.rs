@@ -5,11 +5,11 @@ use diesel::backend::Backend;
 use std::io::Write;
 
 #[derive(FromSqlRow, AsExpression, Serialize, Deserialize, AsExpression, PartialEq, Debug, Clone)]
-pub struct RunCommand {
-    cmd: String
+pub struct Descriptor {
+    owner: i32 // User#id
 }
 
-impl <DB> serialize::ToSql<Json, DB> for RunCommand
+impl <DB> serialize::ToSql<Json, DB> for Descriptor
 where
     DB: Backend,
     String: serialize::ToSql<Json, DB>,
@@ -22,7 +22,7 @@ where
     }
 }
 
-impl <DB> deserialize::FromSql<Json, DB> for RunCommand
+impl <DB> deserialize::FromSql<Json, DB> for Descriptor
 where
     DB: Backend,
     String: deserialize::FromSql<Json, DB>,
