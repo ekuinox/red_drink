@@ -1,7 +1,7 @@
 use chrono::NaiveDateTime;
 use crate::schema::actions;
 
-mod kind;
+mod descriptor;
 
 #[table_name = "actions"]
 #[derive(Serialize, Deserialize, Identifiable, Associations, Queryable, PartialEq, Clone, Debug)]
@@ -9,6 +9,6 @@ mod kind;
 pub struct Action {
     id: i32,
     kind: String,
-    descriptor: kind::RunCommand,
+    descriptor: descriptor::RunCommand,
     created_at: NaiveDateTime
 }
