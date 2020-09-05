@@ -4,13 +4,10 @@ use diesel::deserialize;
 use diesel::backend::Backend;
 use std::io::Write;
 
-#[derive(FromSqlRow, AsExpression, Serialize, Deserialize, AsExpression, PartialEq, Debug, Clone)]
+#[derive(FromSqlRow, Serialize, Deserialize, AsExpression, PartialEq, Debug, Clone)]
+#[sql_type = "Json"]
 pub struct Descriptor {
     owner: i32 // User#id
-}
-
-impl diesel::Expression for Descriptor {
-    type SqlType = Json;
 }
 
 impl <DB> serialize::ToSql<Json, DB> for Descriptor
