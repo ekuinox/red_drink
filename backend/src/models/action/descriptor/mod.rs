@@ -4,10 +4,18 @@ use diesel::deserialize;
 use diesel::backend::Backend;
 use std::io::Write;
 
+mod eval;
+
+pub use eval::EvalDescriptor;
+
 #[derive(FromSqlRow, Serialize, Deserialize, AsExpression, PartialEq, Debug, Clone)]
 #[sql_type = "Varchar"]
-pub struct Descriptor {
-    owner: i32 // User#id
+pub enum Descriptor {
+    Eval(eval::EvalDescriptor)
+}
+
+pub trait AsDescriptor {
+    fn as_descriptor(self) -> Descriptor;
 }
 
 impl <DB> serialize::ToSql<Varchar, DB> for Descriptor
@@ -49,7 +57,10 @@ fn test_descriptor() {
         let action1 = Action {
             id: 0,
             kind: "kind".to_string(),
-            descriptor: Descriptor { owner: 1 },
+            descriptor: EvalDescriptor {
+                command: "./execute.sh".to_string(),
+                required_permissons: vec!["*".to_string()]
+            }.as_descriptor(),
             created_at: Utc::now().naive_utc()
         };
         let action2 = diesel::insert_into(actions::table)
@@ -57,6 +68,10 @@ fn test_descriptor() {
             .returning((actions::id, actions::kind, actions::descriptor, actions::created_at))
             .get_result::<Action>(&conn)?;
         assert_eq!(action1.descriptor, action2.descriptor);
+
+        let action3 = actions::table.find(action1.id).first::<Action>(&conn)?;
+        assert_eq!(action1.descriptor, action3.descriptor);
+
         Ok(())
     });
 }
