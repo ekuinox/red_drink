@@ -45,7 +45,8 @@ fn test_create_action() {
     conn.test_transaction::<_, diesel::result::Error, _>(|| {
         let descriptor = EvalDescriptor {
             command: "./execute.sh".to_string(),
-            required_permissons: vec!["*".to_string()]
+            required_permissons: vec!["*".to_string()],
+            ..Default::default()
         };
         let action = Action::create(descriptor.clone(), &conn)?;
         assert_eq!(descriptor.as_descriptor(), action.descriptor);

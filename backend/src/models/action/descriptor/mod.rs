@@ -63,7 +63,8 @@ fn test_descriptor() {
             kind: "kind".to_string(),
             descriptor: EvalDescriptor {
                 command: "./execute.sh".to_string(),
-                required_permissons: vec!["*".to_string()]
+                required_permissons: vec!["*".to_string()],
+                ..Default::default()
             }.as_descriptor(),
             created_at: Utc::now().naive_utc()
         };

@@ -4,8 +4,19 @@ use descriptor::*;
 /// Run command red_drink server local
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct EvalDescriptor {
+    pub shell: String,
     pub command: String,
     pub required_permissons: Vec<String>,
+}
+
+impl Default for EvalDescriptor {
+    fn default() -> Self {
+        Self {
+            shell: "bash".to_string(),
+            command: "echo hello".to_string(),
+            required_permissons: vec![]
+        }
+    }
 }
 
 impl AsDescriptor for EvalDescriptor {
