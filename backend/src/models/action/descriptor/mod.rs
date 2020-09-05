@@ -5,15 +5,15 @@ use diesel::backend::Backend;
 use std::io::Write;
 
 #[derive(FromSqlRow, Serialize, Deserialize, AsExpression, PartialEq, Debug, Clone)]
-#[sql_type = "Json"]
+#[sql_type = "Varchar"]
 pub struct Descriptor {
     owner: i32 // User#id
 }
 
-impl <DB> serialize::ToSql<Json, DB> for Descriptor
+impl <DB> serialize::ToSql<Varchar, DB> for Descriptor
 where
     DB: Backend,
-    String: serialize::ToSql<Json, DB>,
+    String: serialize::ToSql<Varchar, DB>,
 {
     fn to_sql<W: Write>(&self, out: &mut serialize::Output<W, DB>) -> serialize::Result {
         match serde_json::to_string(self).map(|s| s.to_sql(out)) {
@@ -23,10 +23,10 @@ where
     }
 }
 
-impl <DB> deserialize::FromSql<Json, DB> for Descriptor
+impl <DB> deserialize::FromSql<Varchar, DB> for Descriptor
 where
     DB: Backend,
-    String: deserialize::FromSql<Json, DB>,
+    String: deserialize::FromSql<Varchar, DB>,
 {
     fn from_sql(bytes: Option<&DB::RawValue>) -> deserialize::Result<Self> {
         match serde_json::from_str::<Self>(String::from_sql(bytes)?.to_string().as_str()) {
@@ -34,4 +34,29 @@ where
             Err(err) => Err(Box::new(err))
         }
     }
+}
+
+#[test]
+fn test_descriptor() {
+    use diesel::prelude::*;
+    use chrono::prelude::*;
+    use crate::db::connect;
+    use crate::schema::actions;
+    use crate::models::Action;
+    
+    let conn = connect().get().expect("could not establish conneting");
+    conn.test_transaction::<_, diesel::result::Error, _>(|| {
+        let action1 = Action {
+            id: 0,
+            kind: "kind".to_string(),
+            descriptor: Descriptor { owner: 1 },
+            created_at: Utc::now().naive_utc()
+        };
+        let action2 = diesel::insert_into(actions::table)
+            .values(&action1)
+            .returning((actions::id, actions::kind, actions::descriptor, actions::created_at))
+            .get_result::<Action>(&conn)?;
+        assert_eq!(action1.descriptor, action2.descriptor);
+        Ok(())
+    });
 }
