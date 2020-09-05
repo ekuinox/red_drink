@@ -12,3 +12,9 @@ impl AsDescriptor for EvalDescriptor {
         Descriptor::Eval(self)
     }
 }
+
+impl AsKind for EvalDescriptor {
+    fn kind() -> String {
+        "eval_descriptor".to_string()
+    }
+}

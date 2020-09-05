@@ -14,6 +14,10 @@ pub enum Descriptor {
     Eval(eval::EvalDescriptor)
 }
 
+pub trait AsKind {
+    fn kind() -> String;
+}
+
 pub trait AsDescriptor {
     fn as_descriptor(self) -> Descriptor;
 }
