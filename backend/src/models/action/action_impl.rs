@@ -32,7 +32,7 @@ impl <D: AsDescriptor + AsKind> Create<Action, DieselError, D> for Action {
 impl Executable<()> for Action {
     fn execute(&self, ctx: ExecutableContext) -> Result<(), ExecutableError> {
         match &self.descriptor {
-            Descriptor::Eval(eval) => eval.execute(ctx)
+            Descriptor::Eval(eval) => eval.execute(ctx).map(|_| ())
         }
     }
 }
