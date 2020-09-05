@@ -11,7 +11,7 @@ pub use eval::EvalDescriptor;
 #[derive(FromSqlRow, Serialize, Deserialize, AsExpression, PartialEq, Debug, Clone)]
 #[sql_type = "Varchar"]
 pub enum Descriptor {
-    Eval(eval::EvalDescriptor)
+    Eval(EvalDescriptor)
 }
 
 pub trait AsKind {
