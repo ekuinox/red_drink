@@ -2,7 +2,7 @@ use diesel;
 use diesel::prelude::*;
 use diesel::associations::HasTable;
 use crate::db::DBConnection;
-use crate::models::{traits::*, Action, descriptor::*, Executable, ExecutableContext, ExecutableError};
+use crate::models::{traits::*, Action, action::{descriptor::*, *}};
 use crate::types::DieselError;
 use crate::schema::actions;
 

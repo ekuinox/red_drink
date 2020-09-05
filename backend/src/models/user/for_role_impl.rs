@@ -3,7 +3,7 @@ use diesel;
 use diesel::prelude::*;
 use crate::db::DBConnection;
 use crate::types::DieselError;
-use crate::models::{Assignment, User, Role, Permission, HasPermission, traits::*};
+use crate::models::{Assignment, User, Role, Permission, permission::HasPermission, traits::*};
 
 /// Userに対してのRole周辺の実装
 impl User {
