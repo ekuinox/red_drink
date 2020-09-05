@@ -1,3 +1,4 @@
+use std::process::Command;
 use super::super::*;
 use descriptor::*;
 
@@ -31,16 +32,19 @@ impl AsKind for EvalDescriptor {
     }
 }
 
-impl Executable<()> for EvalDescriptor {
-    fn execute(&self, ctx: ExecutableContext) -> Result<(), ExecutableError> {
+impl Executable<std::process::Output> for EvalDescriptor {
+    fn execute(&self, ctx: ExecutableContext) -> Result<std::process::Output, ExecutableError> {
         let is_denined = self.required_permissons.iter()
             .find(|required| !ctx.executor.has_permission(required.to_owned().to_owned(), None, ctx.conn))
             .is_some();
         if is_denined {
             Err(ExecutableError::AccessDenied)
         } else {
-            // todo
-            Ok(())
+            Command::new(self.shell.clone())
+                .arg("-c")
+                .arg(self.command.clone())
+                .output()
+                .map_err(|err| ExecutableError::IOError(err))
         }
     }
 }
