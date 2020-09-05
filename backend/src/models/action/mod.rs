@@ -1,7 +1,8 @@
 use chrono::NaiveDateTime;
 use crate::schema::actions;
 
-mod descriptor;
+mod action_impl;
+pub mod descriptor;
 
 #[table_name = "actions"]
 #[derive(Serialize, Deserialize, Identifiable, Insertable, Associations, Queryable, PartialEq, Clone, Debug)]
