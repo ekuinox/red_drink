@@ -1,5 +1,7 @@
 use chrono::NaiveDateTime;
 use crate::schema::actions;
+use crate::models::{User};
+use crate::db::DBConnection;
 
 mod action_impl;
 pub mod descriptor;
@@ -12,4 +14,19 @@ pub struct Action {
     kind: String,
     descriptor: descriptor::Descriptor,
     created_at: NaiveDateTime
+}
+
+pub struct ExecutableContext<'a> {
+    pub executor: &'a User,
+    pub conn: &'a DBConnection
+}
+
+#[derive(Debug)]
+pub enum ExecutableError {
+    AccessDenied,
+    DieselError(crate::types::DieselError)
+}
+
+pub trait Executable<T> {
+    fn execute(&self, ctx: ExecutableContext) -> Result<T, ExecutableError>;
 }
