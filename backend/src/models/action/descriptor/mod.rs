@@ -9,6 +9,10 @@ pub struct Descriptor {
     owner: i32 // User#id
 }
 
+impl diesel::Expression for Descriptor {
+    type SqlType = Json;
+}
+
 impl <DB> serialize::ToSql<Json, DB> for Descriptor
 where
     DB: Backend,
