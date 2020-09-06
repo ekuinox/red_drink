@@ -14,3 +14,7 @@ pub trait Save<T> {
 pub trait Find<T, E, Id> {
     fn find(id: Id, conn: &DBConnection) -> Result<T, E>;
 }
+
+pub trait All<T, E> {
+    fn all(conn: &DBConnection) -> Result<Vec<T>, E>;
+}
