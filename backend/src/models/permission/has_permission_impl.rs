@@ -1,4 +1,4 @@
-use crate::models::{Permission, HasPermission};
+use crate::models::{Permission, permission::HasPermission};
 
 /**
  * foo.bar.bazのようなパスから[*, foo.*, foo.bar.*, foo.bar.baz]なパスの配列を求める
