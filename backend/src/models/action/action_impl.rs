@@ -36,7 +36,7 @@ impl All<Action, DieselError> for Action {
 }
 
 impl Action {
-    pub fn all<D: AsKind>(conn: &DBConnection) -> Result<Vec<Action>, DieselError> {
+    pub fn all_by_kind<D: AsKind>(conn: &DBConnection) -> Result<Vec<Action>, DieselError> {
         Action::table()
             .filter(actions::kind.eq(D::kind()))
             .get_results::<Action>(conn)
@@ -86,7 +86,7 @@ fn test_all_action() {
         };
         let action = Action::create(descriptor.clone(), &conn)?;
 
-        let actions = Action::all::<EvalDescriptor>(&conn)?;
+        let actions = Action::all_by_kind::<EvalDescriptor>(&conn)?;
 
         assert!(actions.into_iter().any(|a| a == action));
 
