@@ -44,9 +44,14 @@ impl Action {
 }
 
 impl Executable<()> for Action {
-    fn execute(&self, ctx: ExecutableContext) -> Result<(), ExecutableError> {
+    fn execute(&self, ctx: &ExecutableContext) -> Result<(), ExecutableError> {
         match &self.descriptor {
             Descriptor::Eval(eval) => eval.execute(ctx).map(|_| ())
+        }
+    }
+    fn is_allowed(&self, ctx: &ExecutableContext) -> bool {
+        match &self.descriptor {
+            Descriptor::Eval(eval) => eval.is_allowed(ctx)
         }
     }
 }

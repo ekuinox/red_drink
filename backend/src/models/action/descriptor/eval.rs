@@ -33,10 +33,8 @@ impl AsKind for EvalDescriptor {
 }
 
 impl Executable<std::process::Output> for EvalDescriptor {
-    fn execute(&self, ctx: ExecutableContext) -> Result<std::process::Output, ExecutableError> {
-        let is_allowed = self.required_permissons.is_empty() || !self.required_permissons.iter()
-            .any(|required| !ctx.executor.has_permission(required.to_owned().to_owned(), None, ctx.conn));
-        if is_allowed {
+    fn execute(&self, ctx: &ExecutableContext) -> Result<std::process::Output, ExecutableError> {
+        if self.is_allowed(ctx) {
             Command::new(self.shell.clone())
             .arg("-c")
             .arg(self.command.clone())
@@ -45,6 +43,10 @@ impl Executable<std::process::Output> for EvalDescriptor {
         } else {
             Err(ExecutableError::AccessDenied)
         }
+    }
+    fn is_allowed(&self, ctx: &ExecutableContext) -> bool {
+        self.required_permissons.is_empty() || !self.required_permissons.iter()
+            .any(|required| !ctx.executor.has_permission(required.to_owned().to_owned(), None, ctx.conn))
     }
 }
 
@@ -65,7 +67,9 @@ fn test_eval_command() {
             required_permissons: vec!["*".to_owned()],
             ..Default::default()
         };
-        assert!(eval.execute(ExecutableContext { executor: &user, conn: &conn }).is_ok());
+        let ctx = ExecutableContext { executor: &user, conn: &conn };
+        assert!(eval.is_allowed(&ctx));
+        assert!(eval.execute(&ctx).is_ok());
 
         Ok(())
     });
