@@ -41,6 +41,11 @@ impl Action {
             .filter(actions::kind.eq(D::kind()))
             .get_results::<Action>(conn)
     }
+    pub fn all_allowed(ctx: &ExecutableContext) -> Result<Vec<Action>, DieselError> {
+        Action::all(ctx.conn).map(|actions| 
+            actions.into_iter().filter(|action| action.is_allowed(ctx)).collect()
+        )
+    }
 }
 
 impl Executable<()> for Action {
