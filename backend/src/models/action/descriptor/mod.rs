@@ -10,7 +10,7 @@ mod eval;
 pub use eval::EvalDescriptor;
 
 #[derive(FromSqlRow, Serialize, Deserialize, AsExpression, PartialEq, Debug, Clone)]
-#[sql_type = "Json"]
+#[sql_type = "Jsonb"]
 pub enum Descriptor {
     Eval(EvalDescriptor)
 }
@@ -23,25 +23,27 @@ pub trait AsDescriptor {
     fn as_descriptor(self) -> Descriptor;
 }
 
-impl serialize::ToSql<Json, Pg> for Descriptor
+impl serialize::ToSql<Jsonb, Pg> for Descriptor
 {
     fn to_sql<W: Write>(&self, out: &mut serialize::Output<W, Pg>) -> serialize::Result {
-        match serde_json::to_string(self) {
-            Ok(json) => {
-                let _ = out.write_all(json.as_bytes());
-                Ok(serialize::IsNull::No)
-            },
-            Err(err) => Err(Box::new(err))
-        }
+        out.write_all(&[1])?;
+        serde_json::to_writer(out, self)
+            .map(|_| serialize::IsNull::No)
+            .map_err(Into::into)
     }
 }
 
-impl deserialize::FromSql<Json, Pg> for Descriptor
+impl deserialize::FromSql<Jsonb, Pg> for Descriptor
 {
     fn from_sql(bytes: Option<&<Pg as Backend>::RawValue>) -> deserialize::Result<Self> {
-        match serde_json::from_slice::<Self>(bytes.unwrap_or(b"")) {
-            Ok(a) => Ok(a),
-            Err(err) => Err(Box::new(err))
+        let bytes = not_none!(bytes);
+        if bytes[0] != 1 {
+            Err("Unsupported JSONB encoding version".into())
+        } else {
+            match serde_json::from_slice::<Self>(&bytes[1..]) {
+                Ok(a) => Ok(a),
+                Err(err) => Err(Box::new(err))
+            }
         }
     }
 }
