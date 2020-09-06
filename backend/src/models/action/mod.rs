@@ -28,5 +28,6 @@ pub enum ExecutableError {
 }
 
 pub trait Executable<T> {
-    fn execute(&self, ctx: ExecutableContext) -> Result<T, ExecutableError>;
+    fn execute(&self, ctx: &ExecutableContext) -> Result<T, ExecutableError>;
+    fn is_allowed(&self, ctx: &ExecutableContext) -> bool;
 }
