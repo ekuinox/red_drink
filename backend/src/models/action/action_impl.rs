@@ -29,6 +29,20 @@ impl <D: AsDescriptor + AsKind> Create<Action, DieselError, D> for Action {
     }
 }
 
+impl All<Action, DieselError> for Action {
+    fn all(conn: &DBConnection) -> Result<Vec<Action>, DieselError> {
+        Action::table().load(conn)
+    }
+}
+
+impl Action {
+    pub fn all<D: AsKind>(conn: &DBConnection) -> Result<Vec<Action>, DieselError> {
+        Action::table()
+            .filter(actions::kind.eq(D::kind()))
+            .get_results::<Action>(conn)
+    }
+}
+
 impl Executable<()> for Action {
     fn execute(&self, ctx: ExecutableContext) -> Result<(), ExecutableError> {
         match &self.descriptor {
@@ -50,6 +64,27 @@ fn test_create_action() {
         };
         let action = Action::create(descriptor.clone(), &conn)?;
         assert_eq!(descriptor.as_descriptor(), action.descriptor);
+        Ok(())
+    });
+}
+
+#[test]
+fn test_all_action() {
+    use crate::db::connect;
+    let conn = connect().get().expect("could not establish connection");
+    
+    conn.test_transaction::<_, diesel::result::Error, _>(|| {
+        let descriptor = EvalDescriptor {
+            command: "./execute.sh".to_string(),
+            required_permissons: vec!["*".to_string()],
+            ..Default::default()
+        };
+        let action = Action::create(descriptor.clone(), &conn)?;
+
+        let actions = Action::all::<EvalDescriptor>(&conn)?;
+
+        assert!(actions.into_iter().any(|a| a == action));
+
         Ok(())
     });
 }
