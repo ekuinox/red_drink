@@ -24,8 +24,7 @@ pub struct ExecutableContext<'a> {
 #[derive(Debug)]
 pub enum ExecutableError {
     AccessDenied,
-    IOError(std::io::Error),
-    DieselError(crate::types::DieselError)
+    IOError(std::io::Error)
 }
 
 pub trait Executable<T> {
