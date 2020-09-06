@@ -11,7 +11,7 @@ table! {
     actions (id) {
         id -> Int4,
         kind -> Varchar,
-        descriptor -> Varchar,
+        descriptor -> Json,
         created_at -> Timestamp,
     }
 }

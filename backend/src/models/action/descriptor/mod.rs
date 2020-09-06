@@ -3,13 +3,14 @@ use diesel::serialize;
 use diesel::deserialize;
 use diesel::backend::Backend;
 use std::io::Write;
+use diesel::pg::Pg;
 
 mod eval;
 
 pub use eval::EvalDescriptor;
 
 #[derive(FromSqlRow, Serialize, Deserialize, AsExpression, PartialEq, Debug, Clone)]
-#[sql_type = "Varchar"]
+#[sql_type = "Json"]
 pub enum Descriptor {
     Eval(EvalDescriptor)
 }
@@ -22,26 +23,23 @@ pub trait AsDescriptor {
     fn as_descriptor(self) -> Descriptor;
 }
 
-impl <DB> serialize::ToSql<Varchar, DB> for Descriptor
-where
-    DB: Backend,
-    String: serialize::ToSql<Varchar, DB>,
+impl serialize::ToSql<Json, Pg> for Descriptor
 {
-    fn to_sql<W: Write>(&self, out: &mut serialize::Output<W, DB>) -> serialize::Result {
-        match serde_json::to_string(self).map(|s| s.to_sql(out)) {
-            Ok(a) => a,
+    fn to_sql<W: Write>(&self, out: &mut serialize::Output<W, Pg>) -> serialize::Result {
+        match serde_json::to_string(self) {
+            Ok(json) => {
+                let _ = out.write_all(json.as_bytes());
+                Ok(serialize::IsNull::No)
+            },
             Err(err) => Err(Box::new(err))
         }
     }
 }
 
-impl <DB> deserialize::FromSql<Varchar, DB> for Descriptor
-where
-    DB: Backend,
-    String: deserialize::FromSql<Varchar, DB>,
+impl deserialize::FromSql<Json, Pg> for Descriptor
 {
-    fn from_sql(bytes: Option<&DB::RawValue>) -> deserialize::Result<Self> {
-        match serde_json::from_str::<Self>(String::from_sql(bytes)?.to_string().as_str()) {
+    fn from_sql(bytes: Option<&<Pg as Backend>::RawValue>) -> deserialize::Result<Self> {
+        match serde_json::from_slice::<Self>(bytes.unwrap_or(b"")) {
             Ok(a) => Ok(a),
             Err(err) => Err(Box::new(err))
         }
