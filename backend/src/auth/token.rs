@@ -41,15 +41,15 @@ impl Token {
     }
 }
 
-impl From<String> for Token {
-    fn from(token: String) -> Self {
-        Token(token)
+impl From<Token> for String {
+    fn from(token: Token) -> Self {
+        token.into()
     }
 }
 
-impl Into<String> for Token {
-    fn into(self) -> String {
-        self.0
+impl From<String> for Token {
+    fn from(token: String) -> Self {
+        Token(token)
     }
 }
 
