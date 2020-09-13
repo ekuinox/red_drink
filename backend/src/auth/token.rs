@@ -6,6 +6,7 @@ use dotenv_codegen::dotenv;
 use rocket::Outcome;
 use rocket::http::Status;
 use rocket::request::{self, Request, FromRequest};
+use rocket::http::{Cookie, SameSite};
 use super::claims::*;
 
 const VALID_ALGORITHM: Algorithm = Algorithm::HS512;
@@ -38,6 +39,11 @@ impl Token {
         let key = DecodingKey::from_secret(SECRET_KEY.as_bytes());
         let validation = Validation::new(VALID_ALGORITHM);
         decode::<Claims>(self.0.as_str(), &key, &validation).is_ok()
+    }
+    pub fn to_cookie<'c>(self) -> Cookie<'c> {
+        let mut cookie = Cookie::new(COOKIE_PATH, String::from(self));
+        cookie.set_same_site(SameSite::Lax);
+        cookie
     }
 }
 
