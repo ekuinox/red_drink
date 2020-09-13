@@ -15,3 +15,5 @@ pub struct User {
     pub id: i32,
     pub created_at: NaiveDateTime
 }
+
+pub use as_user::AsUser;
