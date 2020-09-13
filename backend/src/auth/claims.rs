@@ -2,6 +2,7 @@ use chrono::{Utc, Duration};
 use crate::models::user::{User, AsUser};
 use crate::db::DBConnection;
 use crate::types::DieselError;
+use super::Token;
 
 /// 有効期間
 pub const VALIDITY_DAYS: i64 = 7;
@@ -18,6 +19,9 @@ impl Claims {
             uid: id,
             exp: (Utc::now() + Duration::days(VALIDITY_DAYS)).timestamp()
         }
+    }
+    pub fn to_token(self) -> Result<Token, jsonwebtoken::errors::Error> {
+        Token::from_claims(self)
     }
 }
 
