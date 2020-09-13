@@ -1,12 +1,19 @@
 extern crate jsonwebtoken;
 
 use jsonwebtoken::{encode, decode, Header, Algorithm, Validation, EncodingKey, DecodingKey, errors::Error};
-
+use lazy_static::lazy_static;
+use dotenv_codegen::dotenv;
 use super::claims::*;
 
-/// Todo: import extern file
-const SECRET_KEY: &'static str = "secret_key";
 const VALID_ALGORITHM: Algorithm = Algorithm::HS512;
+
+lazy_static! {
+    static ref SECRET_KEY: String = {
+        let path = dotenv!("JWT_KEY_FILE");
+        std::fs::read_to_string(path)
+            .expect(format!("Failed to read key file {}", path).as_str())
+    };
+}
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Token(String);
