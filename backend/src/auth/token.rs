@@ -9,8 +9,8 @@ use rocket::request::{self, Request, FromRequest};
 use rocket::http::{Cookie, SameSite};
 use super::claims::*;
 
-const VALID_ALGORITHM: Algorithm = Algorithm::HS512;
-const COOKIE_PATH: &'static str = "JWT_TOKEN";
+pub const VALID_ALGORITHM: Algorithm = Algorithm::HS512;
+pub const COOKIE_PATH: &'static str = "JWT_TOKEN";
 
 lazy_static! {
     static ref SECRET_KEY: String = {

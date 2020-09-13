@@ -1,8 +1,11 @@
 use chrono::{Utc, Duration};
+use rocket::Outcome;
+use rocket::http::Status;
+use rocket::request::{self, Request, FromRequest};
 use crate::models::user::{User, AsUser};
 use crate::db::DBConnection;
 use crate::types::DieselError;
-use super::Token;
+use super::{Token, COOKIE_PATH};
 
 /// 有効期間
 pub const VALIDITY_DAYS: i64 = 7;
@@ -28,5 +31,26 @@ impl Claims {
 impl AsUser<DieselError> for Claims {
     fn as_user(self, conn: &DBConnection) -> Result<User, DieselError> {
         self.uid.as_user(conn)
+    }
+}
+
+#[derive(Debug)]
+pub enum TokenError {
+    Missing,
+    Invalid
+}
+
+impl<'a, 'r> FromRequest<'a, 'r> for Claims {
+    type Error = TokenError;
+    fn from_request(request: &'a Request<'r>) -> request::Outcome<Self, Self::Error> {
+        request.cookies().get_private(COOKIE_PATH)
+            .map(|token| Token::from(token.to_string()))
+            .map(|token| {
+                match token.claims() {
+                    Ok(claims) => Outcome::Success(claims),
+                    Err(_) => Outcome::Failure((Status::Unauthorized, TokenError::Invalid))
+                }
+            })
+            .unwrap_or(Outcome::Failure((Status::Forbidden, TokenError::Missing)))
     }
 }
