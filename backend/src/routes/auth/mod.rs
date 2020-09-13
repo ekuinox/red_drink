@@ -4,7 +4,6 @@ mod authorize;
 mod login;
 
 const PKCE_VERIFIER_PATH: &'static str = "PKCE_VERIFIER";
-pub const GITHUB_ACCESS_TOKEN_PATH: &'static str = "GITHUB_ACCESS_TOKEN";
 
 // re-exports
 pub use self::authorize::*;
