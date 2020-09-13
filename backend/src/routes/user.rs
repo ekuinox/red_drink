@@ -38,7 +38,7 @@ pub fn get_token(session: Session, connection: Connection) -> Json<Option<GetTok
             .send()
             .map(|response| {
                 response.json::<GetAuthenticatedUserResponse>().ok().and_then(|authenticated_user_response| {
-                    User::find_or_new_by_github_id(authenticated_user_response.id as i32, &connection).map(|user| {
+                    User::find_or_new_by_github_token(&token, &connection).map(|user| {
                         GetTokenResponse {
                             red_drink_id: user.id,
                             token: token,

@@ -20,3 +20,4 @@ pub struct User {
 }
 
 pub use as_user::AsUser;
+pub use for_github_impl::GitHubAccountDetail;
