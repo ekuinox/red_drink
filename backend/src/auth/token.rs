@@ -28,9 +28,6 @@ impl Token {
         let key = EncodingKey::from_secret(SECRET_KEY.as_bytes());
         encode(&header, &claims, &key).map(|token| Token(token))
     }
-    pub fn from_string(token: String) -> Token {
-        Token(token)
-    }
     pub fn claims(self) -> Result<Claims, Error> {
         let key = DecodingKey::from_secret(SECRET_KEY.as_bytes());
         let validation = Validation::new(VALID_ALGORITHM);
@@ -41,6 +38,12 @@ impl Token {
         let key = DecodingKey::from_secret(SECRET_KEY.as_bytes());
         let validation = Validation::new(VALID_ALGORITHM);
         decode::<Claims>(self.0.as_str(), &key, &validation).is_ok()
+    }
+}
+
+impl From<String> for Token {
+    fn from(token: String) -> Self {
+        Token(token)
     }
 }
 
@@ -60,7 +63,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for Token {
     type Error = TokenError;
     fn from_request(request: &'a Request<'r>) -> request::Outcome<Self, Self::Error> {
         request.cookies().get_private(COOKIE_PATH)
-            .map(|token| Token::from_string(token.to_string()))
+            .map(|token| Token::from(token.to_string()))
             .map(|token| {
                 if token.is_valid() {
                     Outcome::Success(token)
