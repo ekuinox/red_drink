@@ -61,6 +61,9 @@ table! {
 table! {
     users (id) {
         id -> Int4,
+        name -> Varchar,
+        avatar_url -> Nullable<Varchar>,
+        email -> Nullable<Varchar>,
         created_at -> Timestamp,
     }
 }
