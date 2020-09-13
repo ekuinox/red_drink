@@ -27,10 +27,15 @@ jobs:
             toolchain: nightly
             components: clippy
             override: true
+      - name: Create keys
+        run: |
+          cd ./backend
+          openssl rand 2048 -out ./keys/jwt.key -base64
       - name: Create .env
         run: |
           cd ./backend
           echo "DATABASE_URL=localhost" >> .env
+          echo "JWT_KEY_FILE=./keys/jwt.key" >> .env
       - name: Build server
         run: |
           cd ./backend
