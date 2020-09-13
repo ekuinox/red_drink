@@ -1,6 +1,7 @@
 use chrono::{NaiveDateTime};
 use crate::schema::users;
 
+mod as_user;
 mod create_impl;
 mod user_impl;
 mod for_github_impl;
