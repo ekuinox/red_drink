@@ -9,10 +9,13 @@ mod for_role_impl;
 
 /// RedDrinkのユーザ
 #[table_name = "users"]
-#[derive(AsChangeset, Serialize, Deserialize, Insertable, Identifiable, Associations, Queryable, PartialEq, Clone, Copy, Debug)]
+#[derive(AsChangeset, Serialize, Deserialize, Insertable, Identifiable, Associations, Queryable, PartialEq, Clone, Debug)]
 #[primary_key(id)]
 pub struct User {
     pub id: i32,
+    pub name: String,
+    pub avatar_url: Option<String>,
+    pub email: Option<String>,
     pub created_at: NaiveDateTime
 }
 

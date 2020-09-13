@@ -13,7 +13,7 @@ impl User {
     /// 注意: GitHubUserへの挿入が失敗した場合でも、そのレコードの削除を行わなっていない
     pub fn create_with_github_id(github_id: i32, conn: &DBConnection) -> Result<User, DieselError> {
         conn.transaction(|| {
-            User::create((), conn).and_then(|user| {
+            User::create("".to_string(), conn).and_then(|user| {
                 user.associate_to_github(github_id, conn).map(|_| user)
             })
         })
