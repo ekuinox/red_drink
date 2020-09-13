@@ -17,12 +17,30 @@ impl HuaSubCommand for CreateCommand {
             .help("Your GitHub account's user id. not username")
             .required(true)
         )
+        .arg(Arg::with_name("username")
+            .short("n")
+            .required(true)
+        )
+        .arg(Arg::with_name("avatar_url")
+            .short("a")
+            .required(true)
+        )
+        .arg(Arg::with_name("email")
+            .short("e")
+            .required(true)
+        )
     }
     fn run(matches: &ArgMatches) -> String {
-        use red_drink::models::User;
-        if let Some(github_user_id)  = matches.value_of("github-id").and_then(|id| id.parse::<i32>().ok()) {
+        use red_drink::models::{User, user::GitHubAccountDetail};
+        if let (Some(id), Some(username), Some(avatar_url), Some(email)) = (
+            matches.value_of("github-id").and_then(|id| id.parse::<i32>().ok()),
+            matches.value_of("username").map(|username| username.to_string()),
+            matches.value_of("avatar_url").map(|avatar_url| avatar_url.to_string()),
+            matches.value_of("email").map(|email| email.to_string())
+        ) {
+            let detail = GitHubAccountDetail { id, login: username.clone(), avatar_url, email, name: username.clone() };
             format!("{}", with_connection(|conn| {
-                if let Ok(user) = User::create_with_github_id(github_user_id, conn) {
+                if let Ok(user) = User::create_with_github_detail(detail, conn) {
                     format!("succeed to create user. user_id: {}", user.id)
                 } else {
                     format!("failed to create user")
