@@ -16,6 +16,7 @@
     "html-webpack-plugin": "^4.3.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "ts-node": "^9.0.0",
     "tsc": "^1.20150623.0",
     "typescript": "^3.8.3",
     "webpack": "^4.43.0",

@@ -1,8 +1,11 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+import * as HtmlWebpackPlugin from 'html-webpack-plugin';
+import { Configuration } from 'webpack';
 
-const env = process.env.WEBPACK_ENV || 'production';
+const isMode = (mode?: string): mode is 'development' | 'production' | 'none' => ['development', 'production', 'none'].includes(mode ?? '');
 
-module.exports = {
+const env = isMode(process.env.WEBPACK_ENV) ? process.env.WEBPACK_ENV : 'production';
+
+const conf: Configuration = {
     mode: env,
 	devtool: env == 'development' ? "inline-source-map" : undefined,
 	entry: './src/Index.tsx',
@@ -28,3 +31,5 @@ module.exports = {
 		})
 	]
 };
+
+export default conf;
