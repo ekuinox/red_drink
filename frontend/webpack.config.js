@@ -1,6 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const env = process.env.WEBPACK_ENV || 'production'
+const env = process.env.WEBPACK_ENV || 'production';
 
 module.exports = {
     mode: env,
@@ -27,4 +27,4 @@ module.exports = {
 			template: "./src/index.html"
 		})
 	]
-}
+};
