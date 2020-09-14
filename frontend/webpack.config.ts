@@ -7,7 +7,7 @@ const env = isMode(process.env.WEBPACK_ENV) ? process.env.WEBPACK_ENV : 'product
 
 const conf: Configuration = {
     mode: env,
-	devtool: env == 'development' ? "inline-source-map" : undefined,
+	devtool: env === 'development' ? "inline-source-map" : undefined,
 	entry: './src/Index.tsx',
 	output: {
 		path: `${__dirname}/dist`,
