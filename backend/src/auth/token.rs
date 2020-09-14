@@ -49,7 +49,7 @@ impl Token {
 
 impl From<Token> for String {
     fn from(token: Token) -> Self {
-        token.into()
+        token.0
     }
 }
 
