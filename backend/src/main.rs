@@ -10,6 +10,7 @@ extern crate rocket_contrib;
 #[macro_use] extern crate serde;
 extern crate serde_json;
 
+mod auth;
 mod models;
 mod db;
 mod routes;
@@ -26,10 +27,8 @@ fn main() {
     rocket::ignite()
         .manage(db::connect())
         .attach(types::Session::fairing())
-        .mount("/", routes![
-            routes::auth::login, routes::auth::authorize, routes::auth::logout,
-            routes::user::get_token
-            ])
+        .mount("/", routes![routes::auth::login, routes::auth::authorize])
+        .mount("/api", routes![routes::api::get])
         .mount("/", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/../frontend/dist")))
         .launch();
 }

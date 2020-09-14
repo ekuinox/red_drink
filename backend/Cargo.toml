@@ -27,7 +27,7 @@ json_dotpath = "1.0.2"
 diesel = { version = "1.4.4", features =  ["postgres", "r2d2", "chrono", "serde_json"] }
 clap = { version = "2.33.3" }
 uuid = { version = "0.8.1", features = ["v4"] }
-
+jsonwebtoken = "7.2.0"
 
 [[bin]]
 name = "red_drink"

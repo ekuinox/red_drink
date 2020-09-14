@@ -51,7 +51,7 @@ fn test_has_permission() {
     conn.test_transaction::<_, diesel::result::Error, _>(|| {
         use crate::models::traits::*;
         use crate::models::Accessible;
-        let user = User::create((), &conn).expect("cannot create user");
+        let user = User::create("name".to_string(), &conn).expect("cannot create user");
         let role = Role::create("test_role".to_string(), &conn).expect("cannot create role");
         if !user.add_role(role.id, &conn) {
             panic!("cannot attach role to user");

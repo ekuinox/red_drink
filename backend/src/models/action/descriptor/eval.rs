@@ -53,12 +53,20 @@ impl Executable<std::process::Output> for EvalDescriptor {
 #[test]
 fn test_eval_command() {
     use diesel::prelude::*;
-    use crate::models::User;
+    use crate::models::{User, user::GitHubAccountDetail};
     use crate::db::connect;
 
+    let detail = GitHubAccountDetail {
+        id: 1,
+        name: "Foo Taro".to_string(),
+        avatar_url: "avatar_url".to_string(),
+        email: "foo@example.com".to_string(),
+        login: "foo".to_string()
+    };
+
     let conn = connect().get().expect("could not established connection");
-    conn.test_transaction::<_, diesel::result::Error, _>(|| {
-        let user = User::create_with_github_id(0, &conn)?;
+    conn.test_transaction::<_, (), _>(|| {
+        let user = User::create_with_github_detail(detail.clone(), &conn)?;
         let r = user.add_role(0, &conn);
         assert!(r);
 
