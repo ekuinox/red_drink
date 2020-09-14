@@ -44,7 +44,9 @@ impl<'a, 'r> FromRequest<'a, 'r> for Claims {
     type Error = TokenError;
     fn from_request(request: &'a Request<'r>) -> request::Outcome<Self, Self::Error> {
         request.cookies().get_private(COOKIE_PATH)
-            .map(|token| Token::from(token.to_string()))
+            .map(|token| {
+                Token::from(token.value().to_string())
+            })
             .map(|token| {
                 match token.claims() {
                     Ok(claims) => Outcome::Success(claims),
