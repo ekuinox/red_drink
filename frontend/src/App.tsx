@@ -10,7 +10,7 @@ export const App = () => {
 
     return (
         <>
-            <Page title="Top" >
+            <Page title="Top" user={user}>
                 <p>{user == null ? 'ログインしてね' : 'こんにちは'}</p>
             </Page>
         </>
