@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "src/Index.tsx",
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "watch": "webpack --watch --mode development"
   },
   "license": "MIT",
   "devDependencies": {
