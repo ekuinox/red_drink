@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { getUser, User } from './red_drink_apis/get_user';
 import { Page } from './components/Page';
+import { useDidMound } from './common/hooks';
 
 export const App = (): JSX.Element => {
   const [user, setUser] = useState<User>();
-  useEffect(() => {
-    getUser().then(setUser);
-  }, []);
+  useDidMound(() => getUser().then(setUser));
 
   return (
     <>
