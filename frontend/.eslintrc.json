@@ -7,7 +7,8 @@
     "prettier/@typescript-eslint"
   ],
   "plugins": [
-    "@typescript-eslint"
+    "@typescript-eslint",
+    "react"
   ],
   "env": {
     "node": true,
