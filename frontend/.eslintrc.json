@@ -26,7 +26,14 @@
     "semi": [ "error", "always"],
     "quotes": [ "warn", "single" ],
     "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": ["error", { "varsIgnorePattern": "^_.+" }],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "varsIgnorePattern": "^_.*",
+        "argsIgnorePattern": "^_.*",
+        "caughtErrorsIgnorePattern": "^_.*"
+      }
+    ],
     "prettier/prettier": [ "error", { "tabWidth": 2, "semi": true, "singleQuote": true, "endOfLine":"auto" } ]
   }
 }
