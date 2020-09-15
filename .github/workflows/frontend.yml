@@ -21,4 +21,4 @@ jobs:
       - name: Build
         run: |
           cd ./frontend
-          WEBPACK_ENV='production' &&  npm run build
+          npm run build
