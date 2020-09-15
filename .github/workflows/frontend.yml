@@ -17,8 +17,8 @@ jobs:
       - name: Install node modules
         run: |
           cd ./frontend
-          yarn install
+          npm ci
       - name: Build
         run: |
           cd ./frontend
-          WEBPACK_ENV='production' &&  yarn webpack
+          WEBPACK_ENV='production' &&  npm run build
