@@ -1,6 +1,7 @@
 import { Configuration } from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { argv } from 'yargs';
+import { resolve } from 'path';
 
 type Mode = 'development' | 'production' | 'none';
 
@@ -20,10 +21,11 @@ const conf: Configuration = {
   devtool: mode === 'development' ? 'inline-source-map' : undefined,
   entry: './src/Index.tsx',
   output: {
-    path: `${__dirname}/dist`,
+    path: resolve(__dirname, 'dist'),
     filename: 'bundle.js',
   },
   resolve: {
+    modules: [resolve(__dirname, 'src'), 'node_modules'],
     extensions: ['.ts', '.tsx', '.js'],
   },
   module: {
