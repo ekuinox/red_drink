@@ -1,16 +1,23 @@
-import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { Configuration } from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import { argv } from 'yargs';
 
-const isMode = (mode?: string): mode is 'development' | 'production' | 'none' =>
-  ['development', 'production', 'none'].includes(mode ?? '');
+type Mode = 'development' | 'production' | 'none';
 
-const env = isMode(process.env.WEBPACK_ENV)
-  ? process.env.WEBPACK_ENV
-  : 'production';
+const getMode = (): Mode => {
+  if (
+    typeof argv['mode'] === 'string' &&
+    ['development', 'production', 'none'].includes(argv['mode'])
+  )
+    return argv['mode'] as Mode;
+  return 'production';
+};
+
+const mode = getMode();
 
 const conf: Configuration = {
-  mode: env,
-  devtool: env === 'development' ? 'inline-source-map' : undefined,
+  mode,
+  devtool: mode === 'development' ? 'inline-source-map' : undefined,
   entry: './src/Index.tsx',
   output: {
     path: `${__dirname}/dist`,
