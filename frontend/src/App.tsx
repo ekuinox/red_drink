@@ -1,10 +1,10 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { getUser, User } from './red_drink_apis/get_user';
 import { Page } from './components/Page';
 
 export const App = (): JSX.Element => {
-  const [user, setUser] = React.useState<User>();
-  React.useEffect(() => {
+  const [user, setUser] = useState<User>();
+  useEffect(() => {
     getUser().then(setUser);
   }, []);
 

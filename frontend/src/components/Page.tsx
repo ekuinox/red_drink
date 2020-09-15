@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Header } from './Header';
 import { Body } from './Body';
 import { User } from '../red_drink_apis/get_user';
