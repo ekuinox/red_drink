@@ -28,7 +28,9 @@ fn main() {
         .manage(db::connect())
         .attach(types::Session::fairing())
         .mount("/", routes![routes::auth::login, routes::auth::authorize])
-        .mount("/api", routes![routes::api::get])
+        .mount("/api", routes![
+            routes::api::user::get, routes::api::user::get_user_by_username
+        ])
         .mount("/", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/../frontend/dist")))
         .launch();
 }
