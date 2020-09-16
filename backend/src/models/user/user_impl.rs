@@ -11,6 +11,12 @@ impl Find<User, DieselError, i32> for User {
     }
 }
 
+impl Find<User, DieselError, String> for User {
+    fn find(username: String, conn: &DBConnection) -> Result<User, DieselError> {
+        users::table.filter(users::name.eq(username)).first::<User>(conn)
+    }
+}
+
 /// ユーザの操作
 impl User {
     /// get all users
