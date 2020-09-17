@@ -1,5 +1,5 @@
 [package]
-name = "red_drink"
+name = "server"
 version = "0.1.0"
 authors = ["ekuinox <depkey@me.com>"]
 edition = "2018"
@@ -28,3 +28,11 @@ diesel = { version = "1.4.4", features =  ["postgres", "r2d2", "chrono", "serde_
 clap = { version = "2.33.3" }
 uuid = { version = "0.8.1", features = ["v4"] }
 jsonwebtoken = "7.2.0"
+
+[dependencies.red_drink]
+version = "0.1.0"
+path = "../red_drink"
+
+[[bin]]
+name = "red_drink"
+path = "src/main.rs"

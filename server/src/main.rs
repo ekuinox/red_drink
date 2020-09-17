@@ -9,17 +9,11 @@ extern crate rocket_contrib;
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate serde;
 extern crate serde_json;
-
-mod auth;
-mod models;
-mod db;
-mod routes;
-mod github;
-mod types;
-mod schema;
+extern crate red_drink;
 
 use rocket_contrib::serve::StaticFiles;
 use dotenv::dotenv;
+use red_drink::*;
 
 fn main() {
     dotenv().ok();
