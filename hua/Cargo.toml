@@ -1,0 +1,16 @@
+[package]
+name = "hua"
+version = "0.1.0"
+authors = ["ekuinox <depkey@me.com>"]
+edition = "2018"
+
+[dependencies]
+clap = { version = "2.33.3" }
+
+[dependencies.red_drink]
+version = "0.1.0"
+path = "../red_drink"
+
+[[bin]]
+name = "hua"
+path = "src/main.rs"

@@ -32,7 +32,3 @@ jsonwebtoken = "7.2.0"
 [[bin]]
 name = "red_drink"
 path = "src/main.rs"
-
-[[bin]]
-name = "hua"
-path = "src/bin/hua.rs"
