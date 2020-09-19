@@ -1857,6 +1857,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "red_drink_server"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "dotenv",
+ "dotenv_codegen",
+ "json_dotpath",
+ "jsonwebtoken",
+ "lazy_static",
+ "oauth2",
+ "red_drink",
+ "rocket",
+ "rocket_contrib",
+ "rocket_session",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "redox_syscall"
 version = "0.1.57"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2203,25 +2222,6 @@ dependencies = [
  "itoa",
  "serde",
  "url 2.1.1",
-]
-
-[[package]]
-name = "server"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dotenv",
- "dotenv_codegen",
- "json_dotpath",
- "jsonwebtoken",
- "lazy_static",
- "oauth2",
- "red_drink",
- "rocket",
- "rocket_contrib",
- "rocket_session",
- "serde",
- "serde_json",
 ]
 
 [[package]]

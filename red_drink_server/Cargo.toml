@@ -1,5 +1,5 @@
 [package]
-name = "server"
+name = "red_drink_server"
 version = "0.1.0"
 authors = ["ekuinox <depkey@me.com>"]
 edition = "2018"
