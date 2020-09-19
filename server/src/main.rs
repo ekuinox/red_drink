@@ -6,8 +6,12 @@ extern crate rand;
 extern crate http;
 extern crate rocket_contrib;
 #[macro_use] extern crate rocket;
+#[macro_use] extern crate serde;
 extern crate serde_json;
 extern crate red_drink;
+
+mod auth;
+mod routes;
 
 use rocket_contrib::serve::StaticFiles;
 use dotenv::dotenv;
