@@ -4,7 +4,7 @@ use json_dotpath::DotPaths;
 use rocket::http::Cookies;
 use crate::auth::Claims;
 use crate::github::*;
-use crate::types::Session;
+use crate::Session;
 use crate::db::Connection;
 use crate::models::User;
 use super::*;

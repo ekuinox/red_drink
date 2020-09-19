@@ -7,15 +7,18 @@ mod auth;
 mod routes;
 
 use rocket_contrib::serve::StaticFiles;
+use serde_json::Value;
 use dotenv::dotenv;
 use red_drink::*;
+
+pub type Session<'a> = rocket_session::Session<'a, serde_json::Map<String, Value>>;
 
 fn main() {
     dotenv().ok();
 
     rocket::ignite()
         .manage(db::connect())
-        .attach(types::Session::fairing())
+        .attach(Session::fairing())
         .mount("/", routes![routes::auth::login, routes::auth::authorize])
         .mount("/api", routes![routes::api::get])
         .mount("/", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/../frontend/dist")))
