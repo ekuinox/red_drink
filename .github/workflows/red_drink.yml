@@ -1,4 +1,4 @@
-name: backend
+name: red_drink
 
 on: [push]
 
