@@ -1,0 +1,29 @@
+[package]
+name = "red_drink_server"
+version = "0.1.0"
+authors = ["ekuinox <depkey@me.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dotenv = "0.15.0"
+dotenv_codegen = "0.15.0"
+rocket = { version = "0.4.4", features = ["private-cookies"] }
+rocket_contrib = "0.4.4"
+lazy_static = "1.4.0"
+rocket_session = "0.2.1"
+serde = { version = "^1.0.106", features = ["derive"] }
+serde_json = "1.0.52"
+json_dotpath = "1.0.2"
+jsonwebtoken = "7.2.0"
+oauth2 = "3.0.0-alpha.9"
+chrono = { version = "0.4.11", features = ["serde"] }
+
+[dependencies.red_drink]
+version = "0.1.0"
+path = "../red_drink"
+
+[[bin]]
+name = "red_drink"
+path = "src/main.rs"

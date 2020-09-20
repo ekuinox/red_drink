@@ -1,7 +1,7 @@
 use json_dotpath::DotPaths;
 use rocket::response::Redirect;
 use crate::github::*;
-use crate::types::Session;
+use crate::Session;
 use super::*;
 
 #[get("/login")]

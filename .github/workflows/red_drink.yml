@@ -1,0 +1,51 @@
+name: red_drink
+
+on: [push]
+
+jobs:
+  build:
+    env:
+      DATABASE_URL: postgres://red_drink:red_drink@localhost:5432/red_drink
+    services:
+      postgres:
+        image: postgres:12
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: red_drink
+          POSTGRES_PASSWORD: red_drink
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        rust: [nightly]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          components: clippy
+          override: true
+      - name: setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+          registry-url: 'https://registry.npmjs.org'
+      - name: Setup frontend
+        run: |
+          cd ./frontend
+          npm ci
+          npm run build
+      - name: Setup Backends
+        run: |
+          echo "secret key" > ./keys/jwt.key
+          echo "DATABASE_URL=localhost" >> .env
+          echo "JWT_KEY_FILE=keys/jwt.key" >> .env
+          cd ./red_drink
+          cargo install diesel_cli --no-default-features --features postgres
+          diesel migration run
+      - name: Build red_drink
+        run: |
+          cargo build --verbose
+          cargo test --verbose
