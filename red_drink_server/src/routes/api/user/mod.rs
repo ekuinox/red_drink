@@ -1,25 +1,16 @@
-use serde::{Serialize, Deserialize};
-use rocket_contrib::json::Json;
-use chrono::NaiveDateTime;
-use crate::db::Connection;
-use crate::auth::Claims;
+use rocket::Route;
+use crate::routes::Routes;
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct UserResponse {
-    id: i32,
-    name: String,
-    avatar_url: Option<String>,
-    email: Option<String>,
-    created_at: NaiveDateTime
-}
+mod get_user;
+mod roles;
 
-#[get("/user")]
-pub fn get(claims: Claims, conn: Connection) -> Json<Option<UserResponse>> {
-    use crate::models::{User, user::AsUser};
-    Json(claims.as_user(&conn)
-        .map(|User { id, name, avatar_url, email, created_at }: User| UserResponse {
-            id, name, avatar_url, email, created_at
-        })
-        .ok()
-    )
+use self::get_user::*;
+use self::roles::*;
+
+pub(crate) struct UserRoutes;
+
+impl Routes for UserRoutes {
+    fn routes() -> Vec<Route> {
+        routes![get, get_user_by_username, get_roles]
+    }
 }
