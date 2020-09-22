@@ -14,8 +14,8 @@ pub const COOKIE_PATH: &'static str = "JWT_TOKEN";
 
 lazy_static! {
     static ref SECRET_KEY: String = {
-        let path = dotenv!("JWT_KEY_FILE");
-        std::fs::read_to_string(path)
+        let path = format!("{}/../{}", env!("CARGO_MANIFEST_DIR"), dotenv!("JWT_KEY_FILE"));
+        std::fs::read_to_string(path.as_str())
             .expect(format!("Failed to read key file {}", path).as_str())
     };
 }

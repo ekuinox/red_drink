@@ -4,7 +4,6 @@
 #[macro_use] extern crate serde;
 extern crate serde_json;
 
-pub mod auth;
 pub mod db;
 pub mod github;
 pub mod models;

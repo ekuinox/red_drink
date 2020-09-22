@@ -9,30 +9,17 @@ edition = "2018"
 [dependencies]
 oauth2 = "3.0.0-alpha.9"
 reqwest = { version = "0.10.4", features = ["blocking", "json"] }
-base64 = "0.12.0"
-rand = "0.7.3"
 url = "2.1.1"
+base64 = "0.12.0"
 dotenv = "0.15.0"
 dotenv_codegen = "0.15.0"
-failure = "0.1.8"
 rocket = { version = "0.4.4", features = ["private-cookies"] }
 rocket_contrib = "0.4.4"
 lazy_static = "1.4.0"
 chrono = { version = "0.4.11", features = ["serde"] }
-rocket_session = "0.2.1"
 http = "0.2.1"
 serde = { version = "^1.0.106", features = ["derive"] }
 serde_json = "1.0.52"
 json_dotpath = "1.0.2"
 diesel = { version = "1.4.4", features =  ["postgres", "r2d2", "chrono", "serde_json"] }
-clap = { version = "2.33.3" }
 uuid = { version = "0.8.1", features = ["v4"] }
-jsonwebtoken = "7.2.0"
-
-[[bin]]
-name = "red_drink"
-path = "src/main.rs"
-
-[[bin]]
-name = "hua"
-path = "src/bin/hua.rs"
