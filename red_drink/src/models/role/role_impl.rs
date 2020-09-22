@@ -32,6 +32,11 @@ impl Role {
         }
     }
 
+    /// resource関係なく紐づくすべての権限を取得する
+    pub fn get_all_permissions(&self, conn: &DBConnection) -> Result<Vec<(String, String)>, DieselError> {
+        Accessible::get_permissions_all_with_resource(self.id, conn)
+    }
+
     /**
      * Roleにリソースに対してのPermissionを紐付ける
      */
