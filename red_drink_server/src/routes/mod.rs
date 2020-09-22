@@ -8,4 +8,5 @@ pub(crate) trait Routes {
 }
 
 // re-exports
+pub(crate) use auth::AuthRoutes;
 pub(crate) use api::ApiRoutes;
