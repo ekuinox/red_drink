@@ -18,7 +18,7 @@ impl Role {
     pub fn get_roles(user_id: i32, connection: &DBConnection) -> Result<Vec<Role>, DieselError> {
         assignments::table.inner_join(roles::table)
             .filter(assignments::user_id.eq(user_id))
-            .select((roles::id, roles::name, roles::created_at))
+            .select((roles::id, roles::name, roles::accessible, roles::created_at))
             .load::<Role>(connection)
     }
 

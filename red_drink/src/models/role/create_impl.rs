@@ -21,7 +21,7 @@ impl RoleBuilder {
             .values(self)
             .returning((roles::id, roles::name, roles::created_at))
             .get_result(connection)
-            .map(|(id, name, created_at)| Role { id, name, created_at })
+            .map(|(id, name, created_at)| Role { id, name, created_at, accessible: Default::default() })
     }
 }
 
