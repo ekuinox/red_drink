@@ -1,16 +1,16 @@
 use diesel::sql_types::Jsonb;
-
+use crate::models::resource_id::{ResourceId};
 mod accessible_impl;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Default, Clone)]
 pub struct Allowed {
-    resources: Vec<String>,
+    resources: Vec<ResourceId>,
     permissions: Vec<String>
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Default, Clone)]
 pub struct Denied {
-    resources: Vec<String>,
+    resources: Vec<ResourceId>,
     permissions: Vec<String>
 }
 

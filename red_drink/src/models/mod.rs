@@ -7,6 +7,7 @@ pub mod resource;
 pub mod role;
 pub mod user;
 pub mod traits;
+pub mod resource_id;
 
 // re-exports
 pub use accessible::Accessible;
