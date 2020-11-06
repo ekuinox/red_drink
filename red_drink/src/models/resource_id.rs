@@ -3,7 +3,7 @@ use crate::db::DBConnection;
 use crate::types::DieselError;
 
 #[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
-pub struct ResourceId(String, String);
+pub struct ResourceId(pub String, pub String);
 
 pub trait ToResourceId<T> {
     fn to_resource_id(&self) -> ResourceId;
