@@ -1,14 +1,12 @@
 mod add_role;
 mod all;
 mod create;
-mod permission;
 
 use clap::{App, SubCommand, ArgMatches};
 use crate::subcommands::HuaSubCommand;
 use add_role::*;
 use all::*;
 use create::*;
-use permission::*;
 
 /// for management users
 pub struct UserCommand;
@@ -22,7 +20,6 @@ impl HuaSubCommand for UserCommand {
                 CreateCommand::create_subcommand(),
                 AllCommand::create_subcommand(),
                 AddRoleCommand::create_subcommand(),
-                PermissionCommand::create_subcommand()
             ])
     }
     fn run(matches: &ArgMatches) -> String {
@@ -30,7 +27,6 @@ impl HuaSubCommand for UserCommand {
             (CREATE_COMMAND_NAME, Some(create_command)) => CreateCommand::run(create_command),
             (ALL_COMMAND_NAME, Some(all_cmd)) => AllCommand::run(all_cmd),
             (ADD_ROLE_COMMAND_NAME, Some(add_role_command)) => AddRoleCommand::run(add_role_command),
-            (PERMISSION_COMMAND_NAME, Some(cmd)) => PermissionCommand::run(cmd),
             _ => "".to_string()
         }
     }

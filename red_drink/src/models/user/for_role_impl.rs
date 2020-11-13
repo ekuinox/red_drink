@@ -1,9 +1,8 @@
-use std::collections::HashSet;
 use diesel;
 use diesel::prelude::*;
-use crate::db::DBConnection;
+use crate::{db::DBConnection, models::resource_id::ResourceId};
 use crate::types::DieselError;
-use crate::models::{Assignment, User, Role, Permission, permission::HasPermission, traits::*};
+use crate::models::{Assignment, User, Role, traits::*};
 
 /// Userに対してのRole周辺の実装
 impl User {
@@ -22,25 +21,11 @@ impl User {
         })
     }
 
-    /// Userが持つPermissionを取得する
-    pub fn get_permissions(&self, resource_id: Option<String>, connection: &DBConnection) -> Result<Vec<Permission>, DieselError> {
-        self.get_roles(connection).map(
-            |roles| roles.into_iter().flat_map(
-                |role| role.get_permissions(resource_id.clone(), connection)
-            ).flatten()
-        ).map( // 重複の削除
-            |permissions| permissions.into_iter()
-                .collect::<HashSet<Permission>>()
-                .into_iter()
-                .collect::<Vec<Permission>>()
-        )
-    }
-
     /// Userが指定したリソースに対する権限を所有しているか
-    pub fn has_permission(&self, required: String, resource_id: Option<String>, conn: &DBConnection) -> bool {
-        self.get_permissions(resource_id, conn).map(
-            |permissions| Permission::has_permission(&permissions, required)
-        ).unwrap_or(false)
+    pub fn has_permission(&self, required: String, resource_id: ResourceId, conn: &DBConnection) -> bool {
+        let roles = self.get_roles(conn).unwrap_or(vec![]);
+        roles.into_iter().all(|role| role.has_permission(required.clone(), resource_id.clone()));
+        false
     }
 }
 
@@ -50,37 +35,34 @@ fn test_has_permission() {
     let conn = connect().get().expect("cannnot get connection");
     conn.test_transaction::<_, diesel::result::Error, _>(|| {
         use crate::models::traits::*;
-        use crate::models::Accessible;
+        use crate::models::{role::policy::{Policy, Allowed}, resource_id::ROOT_RESOURCE};
         let user = User::create("name".to_string(), &conn).expect("cannot create user");
-        let role = Role::create("test_role".to_string(), &conn).expect("cannot create role");
+        let allowed = Allowed {
+            resources: vec![ROOT_RESOURCE.clone()],
+            permissions: vec!["foo.bar".to_string(), "xxx.*".to_string()]
+        };
+        let policy = Policy::with_allowed(allowed);
+        let role = Role::create(("test_role".to_string(), policy) , &conn).expect("cannot create role");
         if !user.add_role(role.id, &conn) {
             panic!("cannot attach role to user");
         }
-        let paths = vec!["foo.bar".to_string(), "xxx.*".to_string()];
-        paths.into_iter().for_each(|path| {
-            use crate::models::permission::{Permission};
-            let Permission { path, .. } = Permission::create((path.clone(), path.clone()), &conn).expect("cannot create role");
-            // リソースは指定せず行う
-            assert!(Accessible::create((role.id, path), &conn).is_ok());
-        });
-
         // foo.barではもちろん*にはアクセスできない
-        assert!(!user.has_permission("*".to_string(), None, &conn));
+        assert!(!user.has_permission("*".to_string(), ROOT_RESOURCE.clone(), &conn));
         // foo.*にもアクセスできない
-        assert!(!user.has_permission("foo.*".to_string(), None, &conn));
-        assert!(user.has_permission("foo.bar".to_string(), None, &conn));
+        assert!(!user.has_permission("foo.*".to_string(), ROOT_RESOURCE.clone(), &conn));
+        assert!(user.has_permission("foo.bar".to_string(), ROOT_RESOURCE.clone(), &conn));
         // エッbarより下にノードあるの!?という状況には対応しない
-        assert!(!user.has_permission("foo.bar.baz".to_string(), None, &conn));
-        assert!(!user.has_permission("foo.bar.*".to_string(), None, &conn));
+        assert!(!user.has_permission("foo.bar.baz".to_string(), ROOT_RESOURCE.clone(), &conn));
+        assert!(!user.has_permission("foo.bar.*".to_string(), ROOT_RESOURCE.clone(), &conn));
 
         // xxx.*にアクセスできる
-        assert!(user.has_permission("xxx.*".to_string(), None, &conn));
+        assert!(user.has_permission("xxx.*".to_string(), ROOT_RESOURCE.clone(), &conn));
         // 子にもアクセスできる
-        assert!(user.has_permission("xxx.yyy".to_string(), None, &conn));
+        assert!(user.has_permission("xxx.yyy".to_string(), ROOT_RESOURCE.clone(), &conn));
         // 孫にもアクセスできる
-        assert!(user.has_permission("xxx.yyy.zzz".to_string(), None, &conn));
+        assert!(user.has_permission("xxx.yyy.zzz".to_string(), ROOT_RESOURCE.clone(), &conn));
         // xxx自体にはアクセスできない
-        assert!(!user.has_permission("xxx".to_string(), None, &conn));
+        assert!(!user.has_permission("xxx".to_string(), ROOT_RESOURCE.clone(), &conn));
 
         Ok(())
     });

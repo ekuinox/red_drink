@@ -1,9 +1,15 @@
 use super::traits::Find;
 use crate::db::DBConnection;
 use crate::types::DieselError;
+use lazy_static::lazy_static;
 
 #[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
 pub struct ResourceId(pub String, pub String);
+
+
+lazy_static! {
+    pub static ref ROOT_RESOURCE: ResourceId = ResourceId("*".to_string(), "*".to_string());
+}
 
 pub trait ToResourceId<T> {
     fn to_resource_id(&self) -> ResourceId;

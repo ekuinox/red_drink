@@ -1,13 +1,14 @@
 use std::process::Command;
 use super::super::*;
 use descriptor::*;
+use crate::models::resource_id::ResourceId;
 
 /// Run command red_drink server local
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct EvalDescriptor {
     pub shell: String,
     pub command: String,
-    pub required_permissons: Vec<String>,
+    pub resources: Vec<(ResourceId, Vec<String>)>
 }
 
 impl Default for EvalDescriptor {
@@ -15,7 +16,7 @@ impl Default for EvalDescriptor {
         Self {
             shell: "bash".to_string(),
             command: "echo hello".to_string(),
-            required_permissons: vec![]
+            resources: vec![]
         }
     }
 }
@@ -45,15 +46,19 @@ impl Executable<std::process::Output> for EvalDescriptor {
         }
     }
     fn is_allowed(&self, ctx: &ExecutableContext) -> bool {
-        self.required_permissons.is_empty() || !self.required_permissons.iter()
-            .any(|required| !ctx.executor.has_permission(required.to_owned().to_owned(), None, ctx.conn))
+        // リソースに対する権限がすべてあればOK
+        self.resources.iter().all(|(resource, required_permissions)| {
+            required_permissions.iter().all(|required| {
+                ctx.executor.has_permission(required.clone(), resource.clone(), ctx.conn)
+            })
+        })
     }
 }
 
 #[test]
 fn test_eval_command() {
     use diesel::prelude::*;
-    use crate::models::{User, user::GitHubAccountDetail};
+    use crate::models::{User, user::GitHubAccountDetail, traits::*, Role, role::policy::{Policy, Allowed}};
     use crate::db::connect;
 
     let detail = GitHubAccountDetail {
@@ -66,13 +71,20 @@ fn test_eval_command() {
 
     let conn = connect().get().expect("could not established connection");
     conn.test_transaction::<_, (), _>(|| {
+        use crate::models::resource_id::ROOT_RESOURCE;
+
         let user = User::create_with_github_detail(detail.clone(), &conn)?;
-        let r = user.add_role(0, &conn);
+        let allowed = Allowed {
+            resources: vec![ROOT_RESOURCE.clone()],
+            permissions: vec!["*".to_string()]
+        };
+        let role: Role = Role::create(("*".to_string(), Policy::with_allowed(allowed)), &conn).map_err(|_| ())?;
+        let r = user.add_role(role.id, &conn);
         assert!(r);
 
         let eval = EvalDescriptor {
             command: "echo hello".to_string(),
-            required_permissons: vec!["*".to_owned()],
+            resources: vec![(ROOT_RESOURCE.clone(), vec!["foo.bar.baz".to_owned()])],
             ..Default::default()
         };
         let ctx = ExecutableContext { executor: &user, conn: &conn };

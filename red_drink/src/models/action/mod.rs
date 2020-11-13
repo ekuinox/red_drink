@@ -18,7 +18,7 @@ pub struct Action {
 
 pub struct ExecutableContext<'a> {
     pub executor: &'a User,
-    pub conn: &'a DBConnection
+    pub conn: &'a DBConnection,
 }
 
 #[derive(Debug)]

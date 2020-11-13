@@ -1,5 +1,5 @@
 use diesel::sql_types::Jsonb;
-use crate::models::resource_id::{ResourceId};
+use crate::models::resource_id::ResourceId;
 mod policy_impl;
 
 /// foo.bar.bazのようなパスから[*, foo.*, foo.bar.*, foo.bar.baz]なパスの配列を求める
@@ -37,8 +37,8 @@ fn has_permission(required: &String, permissions: &Vec<String>) -> bool {
 /// 許可されているリソース
 #[derive(Serialize, Deserialize, PartialEq, Debug, Default, Clone)]
 pub struct Allowed {
-    resources: Vec<ResourceId>,
-    permissions: Vec<String>
+    pub resources: Vec<ResourceId>,
+    pub permissions: Vec<String>
 }
 
 impl Allowed {
@@ -52,8 +52,8 @@ impl Allowed {
 /// 拒否されているリソース
 #[derive(Serialize, Deserialize, PartialEq, Debug, Default, Clone)]
 pub struct Denied {
-    resources: Vec<ResourceId>,
-    permissions: Vec<String>
+    pub resources: Vec<ResourceId>,
+    pub permissions: Vec<String>
 }
 
 impl Denied {
@@ -68,8 +68,8 @@ impl Denied {
 #[derive(FromSqlRow, Serialize, Deserialize, AsExpression, PartialEq, Debug, Default, Clone)]
 #[sql_type = "Jsonb"]
 pub struct Policy {
-    allowed: Allowed,
-    denied: Denied
+    pub allowed: Allowed,
+    pub denied: Denied
 }
 
 impl Policy {
