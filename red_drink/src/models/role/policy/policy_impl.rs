@@ -6,22 +6,22 @@ use std::io::Write;
 use diesel::pg::Pg;
 use super::*;
 
-impl Accessible {
-    pub fn with_allowed(allowed: Allowed) -> Accessible {
-        Accessible { allowed, denied: Default::default() }
+impl Policy {
+    pub fn with_allowed(allowed: Allowed) -> Policy {
+        Policy { allowed, denied: Default::default() }
     }
-    pub fn with_denies(denied: Denied) -> Accessible {
-        Accessible { denied, allowed: Default::default() }
+    pub fn with_denies(denied: Denied) -> Policy {
+        Policy { denied, allowed: Default::default() }
     }
-    pub fn allowed(self, allowed: Allowed) -> Accessible {
-        Accessible { allowed, ..self }
+    pub fn allowed(self, allowed: Allowed) -> Policy {
+        Policy { allowed, ..self }
     }
-    pub fn denied(self, denied: Denied) -> Accessible {
-        Accessible { denied, ..self }
+    pub fn denied(self, denied: Denied) -> Policy {
+        Policy { denied, ..self }
     }
 }
 
-impl serialize::ToSql<Jsonb, Pg> for Accessible
+impl serialize::ToSql<Jsonb, Pg> for Policy
 {
     fn to_sql<W: Write>(&self, out: &mut serialize::Output<W, Pg>) -> serialize::Result {
         out.write_all(&[1])?;
@@ -31,7 +31,7 @@ impl serialize::ToSql<Jsonb, Pg> for Accessible
     }
 }
 
-impl deserialize::FromSql<Jsonb, Pg> for Accessible
+impl deserialize::FromSql<Jsonb, Pg> for Policy
 {
     fn from_sql(bytes: Option<&<Pg as Backend>::RawValue>) -> deserialize::Result<Self> {
         let bytes = not_none!(bytes);

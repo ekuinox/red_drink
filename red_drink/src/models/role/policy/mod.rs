@@ -1,6 +1,6 @@
 use diesel::sql_types::Jsonb;
 use crate::models::resource_id::{ResourceId};
-mod accessible_impl;
+mod policy_impl;
 
 /// foo.bar.bazのようなパスから[*, foo.*, foo.bar.*, foo.bar.baz]なパスの配列を求める
 fn get_parent_paths(path: &String) -> Vec<String> {
@@ -67,12 +67,12 @@ impl Denied {
 /// 許可されているものと拒否されているもの
 #[derive(FromSqlRow, Serialize, Deserialize, AsExpression, PartialEq, Debug, Default, Clone)]
 #[sql_type = "Jsonb"]
-pub struct Accessible {
+pub struct Policy {
     allowed: Allowed,
     denied: Denied
 }
 
-impl Accessible {
+impl Policy {
     /// 対象のリソースに対するアクセス権があるか
     pub fn is_allowed(&self, resource: ResourceId, permission: String) -> bool {
         !self.denied.is_denied(&resource, &permission)
@@ -83,15 +83,15 @@ impl Accessible {
 #[test]
 fn test_has_permission() {
     let resource = ResourceId("xxx".to_string(), "1234".to_string());
-    let accessible = Accessible::with_allowed(Allowed {
+    let policy = Policy::with_allowed(Allowed {
         permissions: vec!["foo.*"].into_iter().map(|s| s.to_string()).collect::<Vec<String>>(),
         resources: vec![resource.clone()]
     }).denied(Denied {
         permissions: vec!["foo.xxx.*"].into_iter().map(|s| s.to_string()).collect::<Vec<String>>(),
         resources: vec![]
     });
-    assert!(accessible.is_allowed(resource.clone(), "foo.bar".to_string()));
-    assert!(accessible.is_allowed(resource.clone(), "foo.*".to_string()));
-    assert!(!accessible.is_allowed(resource.clone(), "foo.xxx.zzz".to_string()));
-    assert!(!accessible.is_allowed(resource.clone(), "bar.*".to_string()));
+    assert!(policy.is_allowed(resource.clone(), "foo.bar".to_string()));
+    assert!(policy.is_allowed(resource.clone(), "foo.*".to_string()));
+    assert!(!policy.is_allowed(resource.clone(), "foo.xxx.zzz".to_string()));
+    assert!(!policy.is_allowed(resource.clone(), "bar.*".to_string()));
 }

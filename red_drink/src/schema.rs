@@ -54,7 +54,7 @@ table! {
     roles (id) {
         id -> Int4,
         name -> Varchar,
-        accessible -> Jsonb,
+        policy -> Jsonb,
         created_at -> Timestamp,
     }
 }

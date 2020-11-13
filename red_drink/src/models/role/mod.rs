@@ -1,11 +1,11 @@
 use chrono::NaiveDateTime;
 use crate::schema::roles;
 
-pub mod accessible;
+pub mod policy;
 mod create_impl;
 mod role_impl;
 
-use accessible::*;
+use policy::*;
 
 #[table_name = "roles"]
 #[derive(Identifiable, AsChangeset, Serialize, Deserialize, Insertable, Queryable, PartialEq, Debug)]
@@ -13,6 +13,6 @@ use accessible::*;
 pub struct Role {
     pub id: i32,
     pub name: String,
-    pub accessible: Accessible,
+    pub policy: Policy,
     pub created_at: NaiveDateTime
 }
