@@ -65,7 +65,7 @@ impl deserialize::FromSql<Jsonb, Pg> for Policy {
 }
 
 #[test]
-fn test_has_permission() {
+fn test_includes() {
     use crate::models::resource_id::ROOT_RESOURCE;
     let p1 = Policy {
         resources: vec![ROOT_RESOURCE.clone()],
