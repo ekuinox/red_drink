@@ -2,10 +2,12 @@ use chrono::NaiveDateTime;
 use crate::schema::roles;
 
 pub mod policy;
+mod permission;
 mod create_impl;
 mod role_impl;
 
-use policy::*;
+pub use policy::*;
+pub use permission::*;
 
 #[table_name = "roles"]
 #[derive(Identifiable, AsChangeset, Serialize, Deserialize, Insertable, Queryable, PartialEq, Debug)]

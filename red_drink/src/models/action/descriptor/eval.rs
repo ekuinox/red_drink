@@ -57,40 +57,5 @@ impl Executable<std::process::Output> for EvalDescriptor {
 
 #[test]
 fn test_eval_command() {
-    use diesel::prelude::*;
-    use crate::models::{User, user::GitHubAccountDetail, traits::*, Role, role::policy::{Policy, Allowed}};
-    use crate::db::connect;
-
-    let detail = GitHubAccountDetail {
-        id: 1,
-        name: "Foo Taro".to_string(),
-        avatar_url: "avatar_url".to_string(),
-        email: "foo@example.com".to_string(),
-        login: "foo".to_string()
-    };
-
-    let conn = connect().get().expect("could not established connection");
-    conn.test_transaction::<_, (), _>(|| {
-        use crate::models::resource_id::ROOT_RESOURCE;
-
-        let user = User::create_with_github_detail(detail.clone(), &conn)?;
-        let allowed = Allowed {
-            resources: vec![ROOT_RESOURCE.clone()],
-            permissions: vec!["*".to_string()]
-        };
-        let role: Role = Role::create(("*".to_string(), Policy::with_allowed(allowed)), &conn).map_err(|_| ())?;
-        let r = user.add_role(role.id, &conn);
-        assert!(r);
-
-        let eval = EvalDescriptor {
-            command: "echo hello".to_string(),
-            resources: vec![(ROOT_RESOURCE.clone(), vec!["foo.bar.baz".to_owned()])],
-            ..Default::default()
-        };
-        let ctx = ExecutableContext { executor: &user, conn: &conn };
-        assert!(eval.is_allowed(&ctx));
-        assert!(eval.execute(&ctx).is_ok());
-
-        Ok(())
-    });
+    // TODO
 }

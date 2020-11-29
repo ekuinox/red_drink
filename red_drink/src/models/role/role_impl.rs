@@ -15,7 +15,9 @@ impl Find<Role, DieselError, i32> for Role {
 impl Role {
     /// リソースに対する権限があるか取得する
     pub fn has_permission(&self, permission: String, resource: ResourceId) -> bool {
-        self.policy.is_allowed(resource, permission)
+        use super::Includes;
+        // TODO: Accessibleがどうかはとりあえず見ない
+        self.policy.includes((permission, resource))
     }
     // get all roles
     pub fn all(connection: &DBConnection) -> Result<Vec<Role>, DieselError> {
