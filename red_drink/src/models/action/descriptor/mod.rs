@@ -64,7 +64,10 @@ fn test_descriptor() {
             kind: "kind".to_string(),
             descriptor: EvalDescriptor {
                 command: "echo hello".to_string(),
-                resources: vec![(ROOT_RESOURCE.clone(), vec!["*".to_owned()])],
+                requires: vec![(
+                    vec![ROOT_RESOURCE.clone()],
+                    vec!["*".to_owned()]
+                )],
                 ..Default::default()
             }.as_descriptor(),
             created_at: Utc::now().naive_utc()

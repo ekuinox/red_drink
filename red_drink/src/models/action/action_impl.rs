@@ -70,7 +70,10 @@ fn test_create_action() {
         use crate::models::resource_id::ROOT_RESOURCE;
         let descriptor = EvalDescriptor {
             command: "echo hello".to_string(),
-            resources: vec![(ROOT_RESOURCE.clone(), vec!["*".to_owned()])],
+            requires: vec![(
+                vec![ROOT_RESOURCE.clone()],
+                vec!["*".to_owned()]
+            )],
             ..Default::default()
         };
         let action = Action::create(descriptor.clone(), &conn)?;
@@ -88,7 +91,10 @@ fn test_all_action() {
         use crate::models::resource_id::ROOT_RESOURCE;
         let descriptor = EvalDescriptor {
             command: "echo hello".to_string(),
-            resources: vec![(ROOT_RESOURCE.clone(), vec!["*".to_owned()])],
+            requires: vec![(
+                vec![ROOT_RESOURCE.clone()],
+                vec!["*".to_owned()]
+            )],
             ..Default::default()
         };
         let action = Action::create(descriptor.clone(), &conn)?;

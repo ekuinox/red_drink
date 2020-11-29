@@ -8,7 +8,7 @@ use crate::models::resource_id::ResourceId;
 pub struct EvalDescriptor {
     pub shell: String,
     pub command: String,
-    pub resources: Vec<(ResourceId, Vec<String>)>
+    pub requires: Vec<(Vec<ResourceId>, Vec<String>)>
 }
 
 impl Default for EvalDescriptor {
@@ -16,7 +16,7 @@ impl Default for EvalDescriptor {
         Self {
             shell: "bash".to_string(),
             command: "echo hello".to_string(),
-            resources: vec![]
+            requires: vec![]
         }
     }
 }
@@ -47,9 +47,11 @@ impl Executable<std::process::Output> for EvalDescriptor {
     }
     fn is_allowed(&self, ctx: &ExecutableContext) -> bool {
         // リソースに対する権限がすべてあればOK
-        self.resources.iter().all(|(resource, required_permissions)| {
-            required_permissions.iter().all(|required| {
-                ctx.executor.has_permission(required.clone(), resource.clone(), ctx.conn)
+        self.requires.iter().all(|(resources, permissions)| {
+            resources.iter().all(|resource| {
+                permissions.iter().all(|permission| {
+                    ctx.executor.has_permission(permission.clone(), resource.clone(), ctx.conn)
+                })
             })
         })
     }
@@ -83,18 +85,24 @@ fn test_eval_command() {
         let desc1 = EvalDescriptor {
             shell: "bash".to_string(),
             command: "echo \"hello world\"".to_string(),
-            resources: vec![(ROOT_RESOURCE.clone(), vec!["foo.bar.baz".to_string()])]
+            requires: vec![(
+                vec![ROOT_RESOURCE.clone()],
+                vec!["foo.bar.baz".to_string()]
+            )]
         };
         assert!(desc1.is_allowed(&ctx));
 
         let desc2 = EvalDescriptor {
             shell: "bash".to_string(),
             command: "echo \"hello world\"".to_string(),
-            resources: vec![(ROOT_RESOURCE.clone(), vec![
-                "foo.bar.baz".to_string(),
-                "foo.bar.*".to_string(),
-                "xxx.yyy.zzz".to_string()
-                ])]
+            requires: vec![(
+                vec![ROOT_RESOURCE.clone()],
+                vec![
+                    "foo.bar.baz".to_string(),
+                    "foo.bar.*".to_string(),
+                    "xxx.yyy.zzz".to_string()
+                ]
+            )]
         };
         assert!(desc2.is_allowed(&ctx));
 
