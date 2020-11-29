@@ -34,6 +34,12 @@ pub struct Policy {
     pub permissions: Vec<Permission>,
 }
 
+impl Policy {
+    pub fn is_allowed(&self) -> bool {
+        self.accessible == Accessible::Allowed
+    }
+}
+
 impl Includes<(String, ResourceId)> for Policy {
     fn includes(&self, (required, resource): (String, ResourceId)) -> bool {
         self.resources.contains(&resource) // 対象のリソースがこのポリシーに含まれているか

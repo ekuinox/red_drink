@@ -6,7 +6,6 @@ use crate::types::DieselError;
 use crate::models::{Role, traits::*};
 use crate::models::resource_id::ResourceId;
 
-
 impl Find<Role, DieselError, i32> for Role {
     fn find(id: i32, conn: &DBConnection) -> Result<Role, DieselError> {
         roles::table.find(id).first::<Role>(conn)
@@ -17,8 +16,10 @@ impl Role {
     /// リソースに対する権限があるか取得する
     pub fn has_permission(&self, permission: String, resource: ResourceId) -> bool {
         use super::Includes;
-        // TODO: Accessibleがどうかはとりあえず見ない
-        self.policy.includes((permission, resource))
+        self.policies
+            .iter()
+            .filter(|policy| policy.is_allowed()) // TODO: Accessibleがどうかはとりあえず見ない
+            .any(|policy| policy.includes((permission.clone(), resource.clone())))
     }
     // get all roles
     pub fn all(connection: &DBConnection) -> Result<Vec<Role>, DieselError> {
@@ -30,7 +31,7 @@ impl Role {
 fn test_has_permission() {
     use chrono::Utc;
     use crate::models::resource_id::ROOT_RESOURCE;
-    use super::{Policy, Permission};
+    use super::{Policy, Policies, Permission};
 
     let p1 = Policy {
         resources: vec![ROOT_RESOURCE.clone()],
@@ -41,7 +42,7 @@ fn test_has_permission() {
     let r1 = Role {
         id: 0,
         name: "test role".to_string(),
-        policy: p1,
+        policies: Policies::from(p1),
         created_at: Utc::now().naive_utc()
     };
 

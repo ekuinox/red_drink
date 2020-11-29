@@ -1,5 +1,5 @@
 insert into roles (
-    id, name, policy
+    id, name, policies
 ) values (
-    0, 'admin', '{"allowed":{"resource":["*"],"permissions":["*"]},"denied":{"resource":[],"permissions":[]}}'
+    0, 'admin', '[{"allowed":{"resource":["*"],"permissions":["*"]},"denied":{"resource":[],"permissions":[]}}]'
 )
