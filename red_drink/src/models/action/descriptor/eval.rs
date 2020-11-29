@@ -1,13 +1,14 @@
 use std::process::Command;
 use super::super::*;
 use descriptor::*;
+use crate::models::resource_id::ResourceId;
 
 /// Run command red_drink server local
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct EvalDescriptor {
     pub shell: String,
     pub command: String,
-    pub required_permissons: Vec<String>,
+    pub requires: Vec<(Vec<ResourceId>, Vec<String>)>
 }
 
 impl Default for EvalDescriptor {
@@ -15,7 +16,7 @@ impl Default for EvalDescriptor {
         Self {
             shell: "bash".to_string(),
             command: "echo hello".to_string(),
-            required_permissons: vec![]
+            requires: vec![]
         }
     }
 }
@@ -45,39 +46,65 @@ impl Executable<std::process::Output> for EvalDescriptor {
         }
     }
     fn is_allowed(&self, ctx: &ExecutableContext) -> bool {
-        self.required_permissons.is_empty() || !self.required_permissons.iter()
-            .any(|required| !ctx.executor.has_permission(required.to_owned().to_owned(), None, ctx.conn))
+        // リソースに対する権限がすべてあればOK
+        self.requires.iter().all(|(resources, permissions)| {
+            resources.iter().all(|resource| {
+                permissions.iter().all(|permission| {
+                    ctx.executor.has_permission(permission.clone(), resource.clone(), ctx.conn)
+                })
+            })
+        })
     }
 }
 
 #[test]
 fn test_eval_command() {
+    use diesel;
     use diesel::prelude::*;
-    use crate::models::{User, user::GitHubAccountDetail};
+    use crate::models::resource_id::ROOT_RESOURCE;
+    use crate::models::{role::{Policy, Permission, Role}, User, traits::*};
     use crate::db::connect;
 
-    let detail = GitHubAccountDetail {
-        id: 1,
-        name: "Foo Taro".to_string(),
-        avatar_url: "avatar_url".to_string(),
-        email: "foo@example.com".to_string(),
-        login: "foo".to_string()
+    let p1 = Policy {
+        resources: vec![ROOT_RESOURCE.clone()],
+        permissions: vec![Permission::from("foo.bar.*"), Permission::from("xxx.*")],
+        ..Default::default()
     };
+    
+    let conn = connect().get().expect("cannnot get connection");
+    conn.test_transaction::<_, diesel::result::Error, _>(|| {
+        let u1 = User::create("test user".to_string(), &conn)?;
+        let r1 = Role::create(("test role".to_string(), p1), &conn)?;
+        u1.add_role(r1.id, &conn);
 
-    let conn = connect().get().expect("could not established connection");
-    conn.test_transaction::<_, (), _>(|| {
-        let user = User::create_with_github_detail(detail.clone(), &conn)?;
-        let r = user.add_role(0, &conn);
-        assert!(r);
-
-        let eval = EvalDescriptor {
-            command: "echo hello".to_string(),
-            required_permissons: vec!["*".to_owned()],
-            ..Default::default()
+        let ctx = ExecutableContext {
+            executor: &u1,
+            conn: &conn
         };
-        let ctx = ExecutableContext { executor: &user, conn: &conn };
-        assert!(eval.is_allowed(&ctx));
-        assert!(eval.execute(&ctx).is_ok());
+
+        let desc1 = EvalDescriptor {
+            shell: "bash".to_string(),
+            command: "echo \"hello world\"".to_string(),
+            requires: vec![(
+                vec![ROOT_RESOURCE.clone()],
+                vec!["foo.bar.baz".to_string()]
+            )]
+        };
+        assert!(desc1.is_allowed(&ctx));
+
+        let desc2 = EvalDescriptor {
+            shell: "bash".to_string(),
+            command: "echo \"hello world\"".to_string(),
+            requires: vec![(
+                vec![ROOT_RESOURCE.clone()],
+                vec![
+                    "foo.bar.baz".to_string(),
+                    "foo.bar.*".to_string(),
+                    "xxx.yyy.zzz".to_string()
+                ]
+            )]
+        };
+        assert!(desc2.is_allowed(&ctx));
 
         Ok(())
     });

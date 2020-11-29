@@ -1,9 +1,10 @@
 use diesel;
 use diesel::prelude::*;
 use crate::db::DBConnection;
-use crate::schema::{roles, assignments};
+use crate::schema::roles;
 use crate::types::DieselError;
-use crate::models::{Role, Permission, Accessible, traits::*};
+use crate::models::{Role, traits::*};
+use crate::models::resource_id::ResourceId;
 
 impl Find<Role, DieselError, i32> for Role {
     fn find(id: i32, conn: &DBConnection) -> Result<Role, DieselError> {
@@ -12,44 +13,42 @@ impl Find<Role, DieselError, i32> for Role {
 }
 
 impl Role {
-    /**
-     * Userに紐づくRoleを取得する
-     */
-    pub fn get_roles(user_id: i32, connection: &DBConnection) -> Result<Vec<Role>, DieselError> {
-        assignments::table.inner_join(roles::table)
-            .filter(assignments::user_id.eq(user_id))
-            .select((roles::id, roles::name, roles::created_at))
-            .load::<Role>(connection)
+    /// リソースに対する権限があるか取得する
+    pub fn has_permission(&self, permission: String, resource: ResourceId) -> bool {
+        use super::Includes;
+        self.policies
+            .iter()
+            .filter(|policy| policy.is_allowed()) // TODO: Accessibleがどうかはとりあえず見ない
+            .any(|policy| policy.includes((permission.clone(), resource.clone())))
     }
-
-    /**
-     * Roleに紐づくPermissionを取得する
-     */
-    pub fn get_permissions(&self, resource_id: Option<String>, conn: &DBConnection) -> Result<Vec<Permission>, DieselError> {
-        match resource_id {
-            Some(id) => Accessible::get_permissions(self.id, id, conn),
-            None => Accessible::get_permissions_for_root(self.id, conn)
-        }
-    }
-
-    /// resource関係なく紐づくすべての権限を取得する
-    pub fn get_all_permissions(&self, conn: &DBConnection) -> Result<Vec<(String, String)>, DieselError> {
-        Accessible::get_permissions_all_with_resource(self.id, conn)
-    }
-
-    /**
-     * Roleにリソースに対してのPermissionを紐付ける
-     */
-    pub fn attach_permission(&self, permission_path: String, resource_id: Option<String>, conn: &DBConnection) -> Result<Accessible, diesel::result::Error> {
-        if let Some(resource_id) = resource_id {
-            Accessible::create((self.id, permission_path, resource_id), conn)
-        } else {
-            Accessible::create((self.id, permission_path), conn)
-        }
-    }
-
     // get all roles
     pub fn all(connection: &DBConnection) -> Result<Vec<Role>, DieselError> {
         roles::table.load::<Role>(connection)
     }
+}
+
+#[test]
+fn test_has_permission() {
+    use chrono::Utc;
+    use crate::models::resource_id::ROOT_RESOURCE;
+    use super::{Policy, Policies, Permission};
+
+    let p1 = Policy {
+        resources: vec![ROOT_RESOURCE.clone()],
+        permissions: vec![Permission::from("foo.bar.*"), Permission::from("xxx.*")],
+        ..Default::default()
+    };
+    
+    let r1 = Role {
+        id: 0,
+        name: "test role".to_string(),
+        policies: Policies::from(p1),
+        created_at: Utc::now().naive_utc()
+    };
+
+    assert!(r1.has_permission("foo.bar.baz".to_string(), ROOT_RESOURCE.clone()));
+    assert!(r1.has_permission("foo.bar.*".to_string(), ROOT_RESOURCE.clone()));
+    assert!(r1.has_permission("xxx.yyy.zzz".to_string(), ROOT_RESOURCE.clone()));
+    assert!(!r1.has_permission("foo.abc.*".to_string(), ROOT_RESOURCE.clone()));
+    assert!(!r1.has_permission("abc.*".to_string(), ROOT_RESOURCE.clone()));
 }

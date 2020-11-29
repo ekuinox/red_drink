@@ -67,9 +67,13 @@ fn test_create_action() {
     
     let conn = connect().get().expect("could not establish connection");
     conn.test_transaction::<_, diesel::result::Error, _>(|| {
+        use crate::models::resource_id::ROOT_RESOURCE;
         let descriptor = EvalDescriptor {
-            command: "./execute.sh".to_string(),
-            required_permissons: vec!["*".to_string()],
+            command: "echo hello".to_string(),
+            requires: vec![(
+                vec![ROOT_RESOURCE.clone()],
+                vec!["*".to_owned()]
+            )],
             ..Default::default()
         };
         let action = Action::create(descriptor.clone(), &conn)?;
@@ -84,9 +88,13 @@ fn test_all_action() {
     let conn = connect().get().expect("could not establish connection");
     
     conn.test_transaction::<_, diesel::result::Error, _>(|| {
+        use crate::models::resource_id::ROOT_RESOURCE;
         let descriptor = EvalDescriptor {
-            command: "./execute.sh".to_string(),
-            required_permissons: vec!["*".to_string()],
+            command: "echo hello".to_string(),
+            requires: vec![(
+                vec![ROOT_RESOURCE.clone()],
+                vec!["*".to_owned()]
+            )],
             ..Default::default()
         };
         let action = Action::create(descriptor.clone(), &conn)?;

@@ -58,12 +58,16 @@ fn test_descriptor() {
     
     let conn = connect().get().expect("could not establish conneting");
     conn.test_transaction::<_, diesel::result::Error, _>(|| {
+        use crate::models::resource_id::ROOT_RESOURCE;
         let action1 = Action {
             id: 0,
             kind: "kind".to_string(),
             descriptor: EvalDescriptor {
-                command: "./execute.sh".to_string(),
-                required_permissons: vec!["*".to_string()],
+                command: "echo hello".to_string(),
+                requires: vec![(
+                    vec![ROOT_RESOURCE.clone()],
+                    vec!["*".to_owned()]
+                )],
                 ..Default::default()
             }.as_descriptor(),
             created_at: Utc::now().naive_utc()
