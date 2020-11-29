@@ -16,7 +16,7 @@ rocket_session = "0.2.1"
 serde = { version = "^1.0.106", features = ["derive"] }
 serde_json = "1.0.52"
 json_dotpath = "1.0.2"
-jsonwebtoken = "7.2.0"
+jsonwebtoken = "7"
 oauth2 = "3.0.0-alpha.9"
 chrono = { version = "0.4.11", features = ["serde"] }
 
