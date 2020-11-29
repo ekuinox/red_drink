@@ -24,12 +24,34 @@ impl User {
     /// Userが指定したリソースに対する権限を所有しているか
     pub fn has_permission(&self, required: String, resource_id: ResourceId, conn: &DBConnection) -> bool {
         let roles = self.get_roles(conn).unwrap_or(vec![]);
-        roles.into_iter().any(|role| role.has_permission(required.clone(), resource_id.clone()));
-        false
+        roles.into_iter().any(|role| role.has_permission(required.clone(), resource_id.clone()))
     }
 }
 
 #[test]
 fn test_has_permission() {
-    // TODO
+    use crate::models::resource_id::ROOT_RESOURCE;
+    use crate::models::role::{Policy, Permission, Role};
+    use crate::db::connect;
+
+    let p1 = Policy {
+        resources: vec![ROOT_RESOURCE.clone()],
+        permissions: vec![Permission::from("foo.bar.*"), Permission::from("xxx.*")],
+        ..Default::default()
+    };
+    
+    let conn = connect().get().expect("cannnot get connection");
+    conn.test_transaction::<_, diesel::result::Error, _>(|| {
+        let u1 = User::create("test user".to_string(), &conn)?;
+        let r1 = Role::create(("test role".to_string(), p1), &conn)?;
+        u1.add_role(r1.id, &conn);
+
+        assert!(u1.has_permission("foo.bar.baz".to_string(), ROOT_RESOURCE.clone(), &conn));
+        assert!(u1.has_permission("foo.bar.*".to_string(), ROOT_RESOURCE.clone(), &conn));
+        assert!(u1.has_permission("xxx.yyy.zzz".to_string(), ROOT_RESOURCE.clone(), &conn));
+        assert!(!u1.has_permission("foo.abc.*".to_string(), ROOT_RESOURCE.clone(), &conn));
+        assert!(!u1.has_permission("abc.*".to_string(), ROOT_RESOURCE.clone(), &conn));
+
+        Ok(())
+    });
 }
