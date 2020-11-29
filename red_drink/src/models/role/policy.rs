@@ -66,5 +66,15 @@ impl deserialize::FromSql<Jsonb, Pg> for Policy {
 
 #[test]
 fn test_has_permission() {
-    // TODO
+    use crate::models::resource_id::ROOT_RESOURCE;
+    let p1 = Policy {
+        resources: vec![ROOT_RESOURCE.clone()],
+        permissions: vec![Permission::from("foo.bar.*"), Permission::from("xxx.*")],
+        ..Default::default()
+    };
+    assert!(p1.includes(("foo.bar.baz".to_string(), ROOT_RESOURCE.clone())));
+    assert!(p1.includes(("foo.bar.*".to_string(), ROOT_RESOURCE.clone())));
+    assert!(p1.includes(("xxx.yyy.zzz".to_string(), ROOT_RESOURCE.clone())));
+    assert!(!p1.includes(("foo.abc.*".to_string(), ROOT_RESOURCE.clone())));
+    assert!(!p1.includes(("abc.*".to_string(), ROOT_RESOURCE.clone())));
 }
