@@ -29,6 +29,14 @@ impl <D: AsDescriptor + AsKind> Create<Action, DieselError, D> for Action {
     }
 }
 
+impl Create<Action, DieselError, Descriptor> for Action {
+    fn create(desc: Descriptor, conn:  &DBConnection) -> Result<Action, DieselError> {
+        match desc {
+            Descriptor::Eval(eval) => Action::create(eval, conn)
+        }
+    }
+}
+
 impl All<Action, DieselError> for Action {
     fn all(conn: &DBConnection) -> Result<Vec<Action>, DieselError> {
         Action::table().load(conn)
