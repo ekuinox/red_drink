@@ -10,10 +10,10 @@ pub mod descriptor;
 #[derive(Serialize, Deserialize, Identifiable, Insertable, Associations, Queryable, PartialEq, Clone, Debug)]
 #[primary_key(id)]
 pub struct Action {
-    id: i32,
-    kind: String,
-    descriptor: descriptor::Descriptor,
-    created_at: NaiveDateTime
+    pub id: i32,
+    pub kind: String,
+    pub descriptor: descriptor::Descriptor,
+    pub created_at: NaiveDateTime
 }
 
 pub struct ExecutableContext<'a> {
