@@ -41,6 +41,6 @@
     "@material-ui/icons": "^4.9.1",
     "@types/material-ui": "^0.21.7",
     "@types/qs": "^6.9.1",
-    "qs": "^6.9.4"
+    "qs": "^6.9.7"
   }
 }
